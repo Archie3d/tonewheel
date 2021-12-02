@@ -1,7 +1,7 @@
 // *****************************************************************************
 //
 //  Tonewheel Audio Engine
-// 
+//
 //  Copyright (C) 2021 Arthur Benilov <arthur.benilov@gmail.com>
 //
 // *****************************************************************************
@@ -52,7 +52,6 @@ private:
     struct Impl;
     std::unique_ptr<Impl> d;
 };
-
 
 } // namespace core
 

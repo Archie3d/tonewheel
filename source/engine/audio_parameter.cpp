@@ -1,7 +1,7 @@
 // *****************************************************************************
 //
 //  Tonewheel Audio Engine
-// 
+//
 //  Copyright (C) 2021 Arthur Benilov <arthur.benilov@gmail.com>
 //
 // *****************************************************************************
@@ -140,6 +140,5 @@ AudioParameter& AudioParameterPool::getParameterByName(const std::string& name)
 
     return dummyParameter;
 }
-
 
 TW_NAMESPACE_END

@@ -1,7 +1,7 @@
 // *****************************************************************************
 //
 //  Tonewheel Audio Engine
-// 
+//
 //  Copyright (C) 2021 Arthur Benilov <arthur.benilov@gmail.com>
 //
 // *****************************************************************************
@@ -76,9 +76,9 @@ void SamplePool::addSample(int id, const std::string& filePath, int startPos, in
 
     if (format == AudioFile::Format::Unknown)
         return;
-    
+
     auto sample{ std::make_shared<Sample>(new AudioFile(filePath, format), startPos, stopPos) };
-    
+
     std::lock_guard<decltype(mutex)> lock(mutex);
 
     const auto hash{ sample->getHash() };

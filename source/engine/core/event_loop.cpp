@@ -1,7 +1,7 @@
 // *****************************************************************************
 //
 //  Tonewheel Audio Engine
-// 
+//
 //  Copyright (C) 2021 Arthur Benilov <arthur.benilov@gmail.com>
 //
 // *****************************************************************************
@@ -121,7 +121,7 @@ struct EventLoop::Impl
     void quit (int code)
     {
         std::unique_lock<decltype(mutex)> lock(mutex);
-        
+
         exitCode = code;
         running = false;
         wait.notify_all();

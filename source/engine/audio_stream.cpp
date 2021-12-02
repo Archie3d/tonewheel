@@ -1,7 +1,7 @@
 // *****************************************************************************
 //
 //  Tonewheel Audio Engine
-// 
+//
 //  Copyright (C) 2021 Arthur Benilov <arthur.benilov@gmail.com>
 //
 // *****************************************************************************
@@ -106,7 +106,7 @@ int AudioStream::fillBuffers(float* left, float* right, int nFrames)
 
         if (nFrames == n)
             return nFrames;
-        
+
         nFrames -= n;
         left += n;
         right += n;
@@ -160,7 +160,7 @@ bool AudioStream::readOne(float& left, float& right)
 
         if (state == State::Finishing)
             state = State::Over;
-        
+
         return false;
     }
 
@@ -210,7 +210,7 @@ void AudioStream::run()
         // Initializing stream
         assert(sample != nullptr);
         file.reset(sample->getAudioFile().clone());
-        
+
         if (file == nullptr) {
             state = State::Over;
             return;
@@ -320,13 +320,13 @@ void AudioStream::run()
                     const auto read{ file->read (xfadeRead,
                                                  &xfadeBuffer.getChannelData(0)[xfadeIdx],
                                                  &xfadeBuffer.getChannelData(1)[xfadeIdx]) };
-                    
+
                     if (read == 0)
                         break;
 
                     xfadeIdx += read;
                     xfadeRead -= read;
-                }                
+                }
 
                 file->seek(sample->getStartPosition() + loopBegin);
 
@@ -348,7 +348,7 @@ void AudioStream::run()
     if (state == State::Over) {
         // Reset file as stream will be returned to pool
         file.reset();
-    }        
+    }
 }
 
 void AudioStream::close()

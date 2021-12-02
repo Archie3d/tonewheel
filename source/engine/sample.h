@@ -1,7 +1,7 @@
 // *****************************************************************************
 //
 //  Tonewheel Audio Engine
-// 
+//
 //  Copyright (C) 2021 Arthur Benilov <arthur.benilov@gmail.com>
 //
 // *****************************************************************************
@@ -28,9 +28,9 @@ class AudioStream;
 
 /**
  * This class represents a single sample.
- * 
+ *
  * The sample's preload buffer is handled by this class as well.
- * 
+ *
  * @note Identical samples with different start and stop positions
  *       should be considered as different ones as the preloading
  *       and playback will be different for such samples even
@@ -77,11 +77,11 @@ private:
 
 /**
  * A collection of samples.
- * 
+ *
  * This class handles a set of samples. There should
  * be normally just one instance of the samples pool which
  * lives in the GlobalEngine singleton.
- * 
+ *
  * @see GlobalEngine.
  */
 class SamplePool final : public core::Worker::Job
@@ -134,7 +134,7 @@ private:
     std::mutex mutex;
 
     core::Worker preloadWorker;
-    std::atomic<int> numPreloadFrames;    
+    std::atomic<int> numPreloadFrames;
 };
 
 TW_NAMESPACE_END

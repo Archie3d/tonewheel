@@ -1,7 +1,7 @@
 // *****************************************************************************
 //
 //  Tonewheel Audio Engine
-// 
+//
 //  Copyright (C) 2021 Arthur Benilov <arthur.benilov@gmail.com>
 //
 // *****************************************************************************
@@ -53,7 +53,7 @@ public:
     {
         assert(dataPtr != nullptr);
     }
-    
+
     void allocate(int numChannels, int numFrames)
     {
         assert(numChannels > 0);

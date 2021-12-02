@@ -1,7 +1,7 @@
 // *****************************************************************************
 //
 //  Tonewheel Audio Engine
-// 
+//
 //  Copyright (C) 2021 Arthur Benilov <arthur.benilov@gmail.com>
 //
 // *****************************************************************************
@@ -100,13 +100,13 @@ struct WavPCM : public AudioFile::Decoder
 
         if (format != Format_PCM)
             return errors::invalidFormat;
-        
+
         if (nChannels != 1 && nChannels != 2)
             return errors::unsupportedChannelsCount;
-        
+
         if (bitsPerSample != 8 && bitsPerSample != 16 && bitsPerSample != 24)
             return errors::unsupportedSampleFormat;
-        
+
         return {};
     }
 
@@ -235,7 +235,7 @@ private:
 
                     if (wav != RIFF)
                         return errors::invalidFormat;
-                    
+
                     break;
                 }
                 case Chunk_Format:
@@ -322,7 +322,7 @@ private:
     size_t readAsFloats (float** out, size_t n)
     {
         size_t bufferSize = n * BytesPerSample * Channels;
-        
+
         // Grow the buffer if needed.
         if (buffer.size() < bufferSize)
             buffer.resize (bufferSize);
@@ -363,7 +363,7 @@ struct OggVorbis : public AudioFile::Decoder
 
         if (res != 0)
             return core::Error("Failed to open file");
-        
+
         fileIsOpen = true;
         sampleRate = (float)vorbisFile.vi->rate;
 
@@ -388,7 +388,7 @@ struct OggVorbis : public AudioFile::Decoder
         assert(fileIsOpen);
 
         const auto res{ ov_pcm_seek(&vorbisFile, frame) };
-        
+
         if (res != 0)
             return core::Error("File seek failed");
 
@@ -410,7 +410,7 @@ struct OggVorbis : public AudioFile::Decoder
 
             if (currentFrames <= 0)
                 break;
-            
+
             ::memcpy(&left[framesRead], pcm[0], sizeof(float) * currentFrames);
             ::memcpy(&right[framesRead], pcm[vorbisFile.vi->channels < 2 ? 0 : 1], sizeof(float) * currentFrames);
 
@@ -475,7 +475,7 @@ core::Error AudioFile::open()
 
     if (res.failed())
         return res;
-    
+
     sampleRate = decoder->getSampleRate();
     numChannels = decoder->getNumChannels();
 

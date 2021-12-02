@@ -1,7 +1,7 @@
 // *****************************************************************************
 //
 //  Tonewheel Audio Engine
-// 
+//
 //  Copyright (C) 2021 Arthur Benilov <arthur.benilov@gmail.com>
 //
 // *****************************************************************************
@@ -18,7 +18,7 @@ namespace core {
 
 /**
  * Aligned memory allocator.
- * 
+ *
  * This class implements a custom allocator for aligned memory blocks.
  * Not all compilers provide std::aligned_alloc (e.g. MSVC does not), which
  * is why we need a custom allocator.
@@ -46,7 +46,7 @@ struct AlignedMemory
 
                 // Calculate the offset and store it behind our aligned pointer
                 *((offset_t *)ptr - 1) = (offset_t) ((uintptr_t)ptr - (uintptr_t)p);
-            }            
+            }
         }
 
         return ptr;

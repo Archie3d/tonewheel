@@ -1,7 +1,7 @@
 // *****************************************************************************
 //
 //  Tonewheel Audio Engine
-// 
+//
 //  Copyright (C) 2021 Arthur Benilov <arthur.benilov@gmail.com>
 //
 // *****************************************************************************
@@ -56,7 +56,7 @@ void AudioBus::killAllVoices()
 
         if (auto* stream{ voice->getStream() })
             stream->returnToPool();
-    
+
         voice->resetAndReturnToPool();
 
         voice = nextVoice;

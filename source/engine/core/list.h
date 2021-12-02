@@ -1,7 +1,7 @@
 // *****************************************************************************
 //
 //  Tonewheel Audio Engine
-// 
+//
 //  Copyright (C) 2021 Arthur Benilov <arthur.benilov@gmail.com>
 //
 // *****************************************************************************
@@ -45,10 +45,10 @@ struct ListItem : public ListNode<ListItem<Item>>
     {
         if (this->_prev != nullptr)
             this->_prev->_next = this->_next;
-        
+
         if (this->_next != nullptr)
             this->_next->_prev = this->_prev;
-        
+
         this->_prev = this->_next = nullptr;
     }
 
@@ -95,7 +95,7 @@ struct List
 
         if (_tail == item)
             _tail = item->prev();
-        
+
         item->remove();
     }
 
@@ -106,7 +106,7 @@ struct List
         while (it != nullptr) {
             if (it == item)
                 return true;
-            
+
             it = it->next();
         }
 
