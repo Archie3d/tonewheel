@@ -13,6 +13,9 @@
 #include "dsp/envelope.h"
 #include "global_engine.h"
 #include "audio_bus.h"
+#include "sample.h"
+#include <map>
+#include <mutex>
 
 TW_NAMESPACE_BEGIN
 
@@ -82,7 +85,10 @@ public:
 
     //------------------------------------------------------
 
-    Engine();
+    /**
+     * Construct the engine with a given number of buses.
+     */
+    Engine(int numBuses = NUM_BUSES);
     virtual ~Engine();
 
     /**
@@ -95,20 +101,39 @@ public:
      * This should be called on a non-audio thread.
      */
     int triggerVoice(Trigger trigger);
+
+    /**
+     * Release a voice.
+     * Negative release time will cause the voice to release
+     * with it's envelope release time, positive value will override the
+     * envelope's release.
+     */
     void releaseVoice(int voiceId, float releaseTime = -1.0f);
 
+    /**
+     * Trigger an actuator to be executed on an audio thread.
+     * 
+     * @note This call is asynchronous and it does not guarantee the
+     *       actuator's function to be executed, for example when the
+     *       audio thread is not running or the queue is full.
+     */
     void triggerActuator(const Actuator::Func& f);
 
     AudioBusPool& getAudioBusPool() noexcept { return audioBusPool; }
     const AudioBusPool& getAudioBusPool() const noexcept { return audioBusPool; }
     float getSampleRate() const noexcept { return sampleRate; }
 
-    void process()
-    {
-        processReleases();
-        processTriggers();
-        processActuators();
-    }
+    /**
+     * Process all pending events on the audio thread.
+     * 
+     * This method will process all the triggers, releases,
+     * and the actuators. It does not process any audio though.
+     */
+    void processAudioEvents();
+
+    void addSample(int id, const std::string& filePath, int startPos = 0, int stopPos = 0);
+
+    Sample::Ptr getSampleById(int id);
 
 private:
     void processTriggers();
@@ -116,8 +141,12 @@ private:
     void processActuators();
     void clearActuators();
 
-
     AudioBusPool audioBusPool;
+
+    std::mutex mutex;
+
+    /// Mapping IDs to samples
+    std::map<int, Sample::Ptr> idToSampleMap;
 
     float sampleRate;
     int frameSize;

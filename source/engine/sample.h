@@ -41,6 +41,7 @@ class Sample final : public core::Releasable
 public:
 
     using Ptr = std::shared_ptr<Sample>;
+    using Hash = std::size_t;
 
     Sample() = delete;
     Sample(AudioFile* audioFile, int start = 0, int stop = 0);
@@ -48,12 +49,14 @@ public:
     Sample& operator =(const Sample&) = delete;
     ~Sample();
 
+    static Hash calculateHash(const std::string& filePath, int startPos, int stopPos);
+
     /**
      * Returns hash code for this sample.
      * Two samples coming from the same file and having identical
      * start and stop positions will also have identical hashes.
      */
-    std::size_t getHash() const;
+    Hash getHash() const noexcept { return hash; }
 
     AudioFile& getAudioFile() { return *file; }
     const core::AudioBuffer<float>& getPreloadedSamples() const noexcept { return preloadBuffer; }
@@ -71,6 +74,7 @@ private:
     std::atomic<int> nPreloadedFrames;
     int startPos;
     int stopPos;
+    Hash hash;
 };
 
 //==============================================================================
@@ -105,17 +109,15 @@ public:
      * path and start/stop positions), however currently we don't check for the
      * uniquness of the IDs.
      */
-    void addSample(int sampleId, const std::string& filePath, int startPos = 0, int stopPos = 0);
+    Sample::Ptr addSample(const std::string& filePath, int startPos = 0, int stopPos = 0);
     void clear();
     int getNumPreloadedSamples() const noexcept { return numPreloadedSamples; }
     int getNumSamples() const noexcept { return numSamples; }
 
     /**
-     * Returns sample by its ID.
+     * Returns sample by its unique hash.
      * If no sample can be found a nullptr is returned.
      */
-    Sample::Ptr getSampleById(int id);
-
     Sample::Ptr getSampleByHash(std::size_t hash);
 
     void preload(int numFrames);
@@ -125,7 +127,6 @@ public:
 
 private:
     std::vector<Sample::Ptr> samples;
-    std::unordered_map<int, Sample::Ptr> idToSampleMap;
     std::unordered_map<std::size_t, Sample::Ptr> hashToSampleMap;
 
     std::atomic<int> numPreloadedSamples;

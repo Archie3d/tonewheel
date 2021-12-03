@@ -11,9 +11,9 @@
 
 TW_NAMESPACE_BEGIN
 
-Engine::Engine()
+Engine::Engine(int numBuses)
     : GlobalEngine::Client()
-    , audioBusPool(*this)
+    , audioBusPool(*this, numBuses)
     , sampleRate{ DEFAULT_SAMPLE_RATE_F }
     , voiceIdCounter{ 0 }
 {
@@ -56,6 +56,36 @@ void Engine::triggerActuator(const Actuator::Func& f)
     actuators.send(std::move(actuator));
 }
 
+void Engine::processAudioEvents()
+{
+    processReleases();
+    processTriggers();
+    processActuators();
+}
+
+void Engine::addSample(int id, const std::string& filePath, int startPos, int stopPos)
+{
+    auto& samplePool{ GlobalEngine::getInstance()->getSamplePool() };
+    auto sample{ samplePool.addSample(filePath, startPos, stopPos) };
+    assert(sample != nullptr);
+
+    if (sample != nullptr) {
+        std::lock_guard<decltype(mutex)> lock(mutex);
+        idToSampleMap[id] = sample;
+    }
+}
+
+Sample::Ptr Engine::getSampleById(int id)
+{
+    std::lock_guard<decltype(mutex)> lock(mutex);
+    auto it{ idToSampleMap.find(id) };
+
+    if (it == idToSampleMap.end())
+        return nullptr;
+
+    return it->second;
+}
+
 void Engine::processTriggers()
 {
     auto* g{ GlobalEngine::getInstance() };
@@ -68,7 +98,7 @@ void Engine::processTriggers()
         if (trig.busNumber < 0 || trig.busNumber >= audioBusPool.getNumBuses())
             continue;
 
-        if (auto sample { samplePool.getSampleById(trig.sampleId) })
+        if (auto sample { getSampleById(trig.sampleId) })
         {
             if (sample->isPreloaded()) {
                 if (auto* stream{ streamPool.getStream() }) {

@@ -18,18 +18,18 @@ Sample::Sample(AudioFile* audioFile, int start, int stop)
     , nPreloadedFrames{ 0 }
     , startPos{ std::max(0, start) }
     , stopPos{ stop }
+    , hash{ calculateHash(file->getPath(), startPos, stopPos) }
 {
 }
 
 Sample::~Sample() = default;
 
-std::size_t Sample::getHash() const
+Sample::Hash Sample::calculateHash(const std::string& filePath, int startPos, int stopPos)
 {
-    std::size_t hash{ std::hash<std::string>{}(file->getPath()) };
-    hash = hash ^ (std::hash<int>{}(startPos) << 1);
-    hash = hash ^ (std::hash<int>{}(stopPos) << 1);
-
-    return hash;
+    Hash h{ std::hash<std::string>{}(filePath) };
+    h = h ^ (std::hash<int>{}(startPos) << 1);
+    h = h ^ (std::hash<int>{}(stopPos) << 1);
+    return h;
 }
 
 core::Error Sample::preload(int numFrames)
@@ -70,52 +70,40 @@ SamplePool::~SamplePool()
     preloadWorker.stop();
 }
 
-void SamplePool::addSample(int id, const std::string& filePath, int startPos, int stopPos)
+Sample::Ptr SamplePool::addSample(const std::string& filePath, int startPos, int stopPos)
 {
     auto format{ AudioFile::guessFormatFromFileName(filePath) };
 
     if (format == AudioFile::Format::Unknown)
-        return;
+        return nullptr;
 
-    auto sample{ std::make_shared<Sample>(new AudioFile(filePath, format), startPos, stopPos) };
+    auto sampleHash{ Sample::calculateHash(filePath, startPos, stopPos) };
 
     std::lock_guard<decltype(mutex)> lock(mutex);
 
-    const auto hash{ sample->getHash() };
-
-    auto it{ hashToSampleMap.find(hash) };
+    auto it{ hashToSampleMap.find(sampleHash) };
 
     if (it != hashToSampleMap.end()) {
         // Sample already exists
-        sample = it->second;
-
-        // @todo Check for conflicting IDs
-        idToSampleMap[id] = sample;
-    } else {
-        idToSampleMap[id] = sample;
-        samples.push_back(std::move(sample));
-        ++numSamples;
+        return it->second;
     }
+
+    auto sample{ std::make_shared<Sample>(new AudioFile(filePath, format), startPos, stopPos) };
+
+    samples.push_back(sample);
+    hashToSampleMap[sampleHash] = sample;
+    ++numSamples;
+
+    return sample;
 }
 
 void SamplePool::clear()
 {
     std::lock_guard<decltype(mutex)> lock(mutex);
-    idToSampleMap.clear();
     hashToSampleMap.clear();
     samples.clear();
     numPreloadedSamples = 0;
     numSamples = 0;
-}
-
-Sample::Ptr SamplePool::getSampleById(int id)
-{
-    std::lock_guard<decltype(mutex)> lock(mutex);
-
-    if (auto it{ idToSampleMap.find(id) }; it != idToSampleMap.end())
-        return it->second;
-
-    return nullptr;
 }
 
 Sample::Ptr SamplePool::getSampleByHash(std::size_t hash)
