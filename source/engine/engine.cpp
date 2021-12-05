@@ -67,11 +67,12 @@ void Engine::addSample(int id, const std::string& filePath, int startPos, int st
 {
     auto& samplePool{ GlobalEngine::getInstance()->getSamplePool() };
     auto sample{ samplePool.addSample(filePath, startPos, stopPos) };
-    assert(sample != nullptr);
 
     if (sample != nullptr) {
         std::lock_guard<decltype(mutex)> lock(mutex);
         idToSampleMap[id] = sample;
+    } else {
+        // @todo Report unable to load sample from filePath
     }
 }
 
