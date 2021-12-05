@@ -26,7 +26,7 @@ TW_NAMESPACE_BEGIN
  * and schedules voices playback on those buses. It shares resources
  * like samples and streams with other engine instances via the
  * @ref GlobalEngine singleton.
- * 
+ *
  * @see GlobalEngine
  */
 class Engine : public GlobalEngine::Client
@@ -112,7 +112,7 @@ public:
 
     /**
      * Trigger an actuator to be executed on an audio thread.
-     * 
+     *
      * @note This call is asynchronous and it does not guarantee the
      *       actuator's function to be executed, for example when the
      *       audio thread is not running or the queue is full.
@@ -125,14 +125,29 @@ public:
 
     /**
      * Process all pending events on the audio thread.
-     * 
+     *
      * This method will process all the triggers, releases,
      * and the actuators. It does not process any audio though.
      */
     void processAudioEvents();
 
+    /**
+     * Add a sample to the engine.
+     *
+     * This method will add a sample to the global pool if it's not already
+     * there and the register the sample with the current engine using the
+     * ID number provided.
+     *
+     * @note This method is thread-safe however it will lock while the
+     *       sample is being added.
+     */
     void addSample(int id, const std::string& filePath, int startPos = 0, int stopPos = 0);
 
+    /**
+     * Returns a sample by its ID.
+     *
+     * @note This method is thread-safe however it will lock.
+     */
     Sample::Ptr getSampleById(int id);
 
 private:

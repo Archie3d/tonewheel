@@ -106,8 +106,10 @@ public:
     /**
      * Add a sample to the pool but do not preload it yet.
      * This will not add a sample if it's been already added (based on the file
-     * path and start/stop positions), however currently we don't check for the
-     * uniquness of the IDs.
+     * path and start/stop positions).
+     *
+     * @note This method is thread-safe however it will lock while the sample is
+     *       being added to the pool.
      */
     Sample::Ptr addSample(const std::string& filePath, int startPos = 0, int stopPos = 0);
     void clear();
