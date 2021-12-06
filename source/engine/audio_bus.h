@@ -11,6 +11,7 @@
 #include "globals.h"
 #include "global_engine.h"
 #include "audio_parameter.h"
+#include "audio_effect.h"
 #include "voice.h"
 #include "core/audio_buffer.h"
 #include "core/list.h"
@@ -60,6 +61,8 @@ private:
     core::AudioBuffer<float> mixBuffer;
 
     AudioParameterPool params;
+
+    AudioEffectChain fxChain;
 
     core::List<Voice> voices;   ///< Active voices.
     core::AudioBuffer<float> voiceBuffer;

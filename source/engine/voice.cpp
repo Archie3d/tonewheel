@@ -28,6 +28,9 @@ Voice::Voice()
 
 bool Voice::isOver() const
 {
+    if (fxTailCountdown > 0)
+        return false;
+
     bool over{ envelope.getState() == dsp::Envelope::State::Off };
 
     if (!over && voiceTrigger.stream != nullptr)
@@ -52,6 +55,17 @@ void Voice::resetAndReturnToPool()
 void Voice::process(float* outL, float* outR, int numFrames)
 {
     assert(voiceTrigger.stream != nullptr);
+
+    // Process the FX tail only
+    if (envelope.getState() == dsp::Envelope::State::Off && fxTailCountdown > 0) {
+        int framesThisTime{ std::min(numFrames, fxTailCountdown) };
+        memset(outL, 0, sizeof(float) * numFrames);
+        memset(outR, 0, sizeof(float) * numFrames);
+        voiceTrigger.fxChain->process(outL, outR, outL, outR, numFrames);
+        fxTailCountdown -= framesThisTime;
+
+        return;
+    }
 
     int generatedFrames{ 0 };
 
@@ -98,12 +112,20 @@ void Voice::process(float* outL, float* outR, int numFrames)
         outR[i] *= env;
     }
 
-    if (envelope.getState() == dsp::Envelope::State::Off)
+    if (envelope.getState() == dsp::Envelope::State::Off) {
         voiceTrigger.stream->release();
+
+        fxTailCountdown = { voiceTrigger.fxChain == nullptr ? 0 : voiceTrigger.fxChain->getTailLength() };
+    }
+
+    if (voiceTrigger.fxChain != nullptr) {
+        voiceTrigger.fxChain->process(outL, outR, outL, outR, numFrames);
+    }
 
     samplePos += numFrames;
 }
 
+/*
 void Voice::processOne(float& left, float& right)
 {
     assert(voiceTrigger.stream != nullptr);
@@ -125,6 +147,7 @@ void Voice::processOne(float& left, float& right)
 
     ++samplePos;
 }
+*/
 
 void Voice::release()
 {
@@ -160,6 +183,7 @@ void Voice::trigger(Engine* eng, const Voice::Trigger& trig)
 void Voice::reset()
 {
     samplePos = 0;
+    fxTailCountdown = 0;
     params[GAIN].setValue(1.0f, true);
     params[PITCH].setValue(1.0f, true);
 }

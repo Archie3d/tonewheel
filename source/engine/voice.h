@@ -11,6 +11,7 @@
 #include "globals.h"
 #include "audio_parameter.h"
 #include "audio_stream.h"
+#include "audio_effect.h"
 #include "core/list.h"
 #include "dsp/envelope.h"
 #include <atomic>
@@ -35,7 +36,9 @@ public:
         int key             { -1 };
         int rootKey         { -1 };
 
-        dsp::Envelope::Spec envelope;
+        dsp::Envelope::Spec envelope{};
+
+        AudioEffectChain::Ptr fxChain{};
     };
 
     enum Params
@@ -53,7 +56,7 @@ public:
 
     void resetAndReturnToPool();
     void process(float* outL, float* outR, int numFrames);
-    void processOne(float& left, float& right);
+    //void processOne(float& left, float& right);
     void release();
     void releaseWithReleaseTime(float t);
 
@@ -81,6 +84,8 @@ private:
     AudioParameterPool params;
 
     int samplePos;
+
+    int fxTailCountdown;
 };
 
 //==============================================================================

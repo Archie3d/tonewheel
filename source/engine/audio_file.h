@@ -17,7 +17,7 @@ TW_NAMESPACE_BEGIN
 
 /**
  * Audio file reader.
- * 
+ *
  * This class is used to read samples from audio files.
  * So far it is limited to a known file formats and supports
  * only mono and setreo (2 channels) signals.

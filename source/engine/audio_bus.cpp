@@ -15,6 +15,7 @@ AudioBus::AudioBus()
     : engine{ nullptr }
     , mixBuffer(MIX_BUFFER_NUM_CHANNELS, MIX_BUFFER_NUM_FRAMES)
     , params(NUM_PARAMS)
+    , fxChain()
     , voiceBuffer(MIX_BUFFER_NUM_CHANNELS, MIX_BUFFER_NUM_FRAMES)
     , busBuffer(MIX_BUFFER_NUM_CHANNELS, MIX_BUFFER_NUM_FRAMES)
 {
@@ -33,7 +34,7 @@ void AudioBus::prepareToPlay()
 {
     assert(engine != nullptr);
 
-    // @todo prepare all the FXs on the  bus
+    fxChain.prepareToPlay();
 }
 
 void AudioBus::trigger(const Voice::Trigger& voiceTrigger)
@@ -131,6 +132,8 @@ void AudioBus::setEngine(Engine* eng)
 {
     assert(eng != nullptr);
     engine = eng;
+
+    fxChain.setEngine(engine);
 }
 
 //==============================================================================
