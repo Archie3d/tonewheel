@@ -92,9 +92,20 @@ public:
     virtual ~Engine();
 
     /**
+     * Reset the engine.
+     *
+     * This will remove all the effects on engine's buses.
+     *
+     * @note This must not be called on the audio thread.
+     */
+    void reset();
+
+    /**
      * Prepare the engine for the playback.
      */
     void prepareToPlay(float requestedSampleRate, int requestedFrameSize);
+
+    void prepareToPlay();
 
     /**
      * Trigger a new voice.

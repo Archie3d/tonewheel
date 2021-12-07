@@ -21,11 +21,21 @@ Engine::Engine(int numBuses)
 
 Engine::~Engine() = default;
 
+void Engine::reset()
+{
+    audioBusPool.clearFxChain();
+}
+
 void Engine::prepareToPlay(float requestedSampleRate, int requestedFrameSize)
 {
     sampleRate = requestedSampleRate;
     frameSize = requestedFrameSize;
 
+    audioBusPool.prepareToPlay();
+}
+
+void Engine::prepareToPlay()
+{
     audioBusPool.prepareToPlay();
 }
 

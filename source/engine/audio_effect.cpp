@@ -7,6 +7,7 @@
 // *****************************************************************************
 
 #include "audio_effect.h"
+#include "fx/delay.h"
 #include <cassert>
 
 TW_NAMESPACE_BEGIN
@@ -23,6 +24,16 @@ void AudioEffect::setEngine(Engine* eng)
 {
     assert(eng != nullptr);
     engine = eng;
+}
+
+AudioEffect::UniquePtr AudioEffect::createByTag(const std::string& tag)
+{
+    static const AudioEffectFactory factory {
+        { fx::Delay::tag, []() { return std::make_unique<fx::Delay>(); } }
+    };
+
+    // This will return nullptr if effect tag cannot be found in the factory
+    return factory.create(tag);
 }
 
 //==============================================================================
@@ -53,6 +64,18 @@ void AudioEffectChain::setEngine(Engine* eng)
 
     for (auto& fx : effects)
         fx->setEngine(engine);
+}
+
+AudioEffect* AudioEffectChain::addEffectByTag(const std::string& tag)
+{
+    if (auto fx{ AudioEffect::createByTag(tag)}) {
+        fx->setEngine(engine);
+        auto* ptr{ fx.get() };
+        effects.push_back(std::move(fx));
+        return ptr;
+    }
+
+    return nullptr;
 }
 
 bool AudioEffectChain::isEmpty() const noexcept

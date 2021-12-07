@@ -27,16 +27,17 @@ public:
 
     Error(const std::string& errorMessage)
         : error{ true }
-        , message{ errorMessage }
+        , msg{ errorMessage }
     {
     }
 
     bool ok() const noexcept { return !error; }
     bool failed() const noexcept { return error; }
+    const std::string& message() const noexcept { return msg; }
 
 private:
     bool error{ false };
-    std::string message{};
+    std::string msg{};
 };
 
 } // namespace core

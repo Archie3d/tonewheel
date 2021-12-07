@@ -12,6 +12,7 @@
 #include "audio_parameter.h"
 #include "core/release_pool.h"
 #include "core/audio_buffer.h"
+#include "core/factory.h"
 #include <memory>
 #include <vector>
 
@@ -19,6 +20,10 @@ TW_NAMESPACE_BEGIN
 
 class Engine;
 
+/**
+ * This class represents an abstract audio effect
+ * that operates on a single stereo bus or voice.
+ */
 class AudioEffect
 {
 public:
@@ -39,10 +44,15 @@ public:
                          float* outL, float* outR,
                          int numFrames) = 0;
 
+    AudioParameterPool& getParameters() noexcept { return params; }
+    const AudioParameterPool& getParameters() const noexcept { return params; }
+
     /**
      * Returns the effect's processing tail length in samples.
      */
     virtual int getTailLength() const { return 0; }
+
+    static UniquePtr createByTag(const std::string& type);
 
 protected:
 
@@ -51,7 +61,11 @@ protected:
     AudioParameterPool params;
 };
 
-//==========================================================
+//==============================================================================
+
+using AudioEffectFactory = core::Factory<std::string, AudioEffect::UniquePtr>;
+
+//==============================================================================
 
 class AudioEffectChain : public core::Releasable
 {
@@ -77,6 +91,8 @@ public:
         auto* ptr{ effect.get() };
         effects.push_back(std::move(effect));
     }
+
+    AudioEffect* addEffectByTag(const std::string& tag);
 
     bool isEmpty() const noexcept;
 

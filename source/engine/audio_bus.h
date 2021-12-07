@@ -44,6 +44,11 @@ public:
     AudioParameterPool& getParameters() noexcept { return params; }
     const AudioParameterPool& getParameters() const noexcept { return params; }
 
+    AudioEffectChain& getFxChain() noexcept { return fxChain; }
+    const AudioEffectChain& getFxChain() const noexcept { return fxChain; }
+
+    void clearFxChain();
+
     void prepareToPlay();
 
     void trigger(const Voice::Trigger& voiceTrigger);
@@ -63,6 +68,7 @@ private:
     AudioParameterPool params;
 
     AudioEffectChain fxChain;
+    int fxTailCountdown;
 
     core::List<Voice> voices;   ///< Active voices.
     core::AudioBuffer<float> voiceBuffer;
@@ -85,6 +91,8 @@ public:
 
     AudioBus& operator[](int index) { return buses.at((size_t)index); }
     const AudioBus& operator[](int index) const { return buses.at((size_t)index); }
+
+    void clearFxChain();
 
     void prepareToPlay();
 

@@ -9,6 +9,7 @@
 #include "sample.h"
 #include "global_engine.h"
 #include "audio_stream.h"
+#include <iostream>
 
 TW_NAMESPACE_BEGIN
 
@@ -142,8 +143,12 @@ void SamplePool::run()
             lock.unlock();
 
             if (!sample->isPreloaded()) {
-                if (sample->preload(frames).ok())
+                auto res{ sample->preload(frames) };
+                if (res.ok()) {
                     ++numPreloadedSamples;
+                } else {
+                    std::cerr << sample->getAudioFile().getPath() << ": " << res.message() << "\n";
+                }
             }
 
             ++idx;

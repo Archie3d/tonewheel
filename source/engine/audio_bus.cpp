@@ -16,6 +16,7 @@ AudioBus::AudioBus()
     , mixBuffer(MIX_BUFFER_NUM_CHANNELS, MIX_BUFFER_NUM_FRAMES)
     , params(NUM_PARAMS)
     , fxChain()
+    , fxTailCountdown{ 0 }
     , voiceBuffer(MIX_BUFFER_NUM_CHANNELS, MIX_BUFFER_NUM_FRAMES)
     , busBuffer(MIX_BUFFER_NUM_CHANNELS, MIX_BUFFER_NUM_FRAMES)
 {
@@ -30,11 +31,18 @@ AudioBus::AudioBus()
 
 AudioBus::~AudioBus() = default;
 
+void AudioBus::clearFxChain()
+{
+    fxChain.clear();
+    fxTailCountdown = 0;
+}
+
 void AudioBus::prepareToPlay()
 {
     assert(engine != nullptr);
 
     fxChain.prepareToPlay();
+    fxTailCountdown = 0;
 }
 
 void AudioBus::trigger(const Voice::Trigger& voiceTrigger)
@@ -72,8 +80,19 @@ void AudioBus::processAndMix(float* outL, float* outR, int numFrames)
     auto* voice{ voices.first() };
 
     // @todo Check the FX-chain is empty
-    if (voice == nullptr)
+    if (voice == nullptr) {
+        if (fxTailCountdown == 0)
+            return;
+
+        fxChain.process(outL, outR, outL, outR, numFrames);
+
+        if (fxTailCountdown > 0)
+            fxTailCountdown = numFrames > fxTailCountdown ? 0 : fxTailCountdown - numFrames;
+
+        // Negative tail means infinitely long effect
         return;
+
+    }
 
     busBuffer.clear();
 
@@ -95,7 +114,12 @@ void AudioBus::processAndMix(float* outL, float* outR, int numFrames)
         }
     }
 
-    // @todo Apply bus effects
+    float* bufL{ busBuffer.getChannelData(0) };
+    float* bufR{ busBuffer.getChannelData(0) };
+
+    // Apply bus effects
+    fxChain.process(bufL, bufR, bufL, bufR, numFrames);
+    fxTailCountdown = fxChain.getTailLength();
 
     float gain{ params[GAIN].getTargetValue() };
     float pan{ params[PAN].getTargetValue() };
@@ -103,8 +127,6 @@ void AudioBus::processAndMix(float* outL, float* outR, int numFrames)
     float panR{ pan >= 0.0f ? 1.0f : 1.0f + pan };
 
     int i{ 0 };
-    const float* bufL{ busBuffer.getChannelData(0) };
-    const float* bufR{ busBuffer.getChannelData(0) };
 
     while ((params[GAIN].isSmoothing() || params[PAN].isSmoothing()) && i < numFrames) {
         gain = params[GAIN].getNextValue();
@@ -144,6 +166,12 @@ AudioBusPool::AudioBusPool(Engine& audioEngine, int size)
 {
     for (auto& bus : buses)
         bus.setEngine(&engine);
+}
+
+void AudioBusPool::clearFxChain()
+{
+    for (auto& bus : buses)
+        bus.clearFxChain();
 }
 
 void AudioBusPool::prepareToPlay()

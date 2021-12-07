@@ -68,7 +68,10 @@ class AudioParameterPool
 public:
     AudioParameterPool(int size);
     AudioParameter& operator[](int index);
+    const AudioParameter& operator[](int index) const;
     AudioParameter& getParameterByName(const std::string& name);
+
+    int getNumParameters() const noexcept { return (int)parameters.size(); }
 private:
     std::vector<AudioParameter> parameters;
 };

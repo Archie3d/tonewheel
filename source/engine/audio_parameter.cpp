@@ -131,6 +131,17 @@ AudioParameter& AudioParameterPool::operator[](int index)
     return dummyParameter;
 }
 
+const AudioParameter& AudioParameterPool::operator[](int index) const
+{
+    assert(index >= 0 && index < (int)parameters.size());
+
+    if (index >= 0 && index < (int)parameters.size())
+        return parameters.at(index);
+
+    return dummyParameter;
+}
+
+
 AudioParameter& AudioParameterPool::getParameterByName(const std::string& name)
 {
     for (auto& param : parameters) {
