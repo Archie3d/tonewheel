@@ -19,6 +19,7 @@ AudioBus::AudioBus()
     , fxTailCountdown{ 0 }
     , voiceBuffer(MIX_BUFFER_NUM_CHANNELS, MIX_BUFFER_NUM_FRAMES)
     , busBuffer(MIX_BUFFER_NUM_CHANNELS, MIX_BUFFER_NUM_FRAMES)
+    , sendBuffer(MIX_BUFFER_NUM_CHANNELS, MIX_BUFFER_NUM_FRAMES)
 {
     params[GAIN].setName("gain");
     params[GAIN].setRange(0.0f, 1.0f);
@@ -43,6 +44,8 @@ void AudioBus::prepareToPlay()
 
     fxChain.prepareToPlay();
     fxTailCountdown = 0;
+    busBuffer.clear();
+    sendBuffer.clear();
 }
 
 void AudioBus::trigger(const Voice::Trigger& voiceTrigger)
@@ -77,24 +80,20 @@ void AudioBus::processAndMix(float* outL, float* outR, int numFrames)
     assert(voiceBuffer.getNumFrames() >= numFrames);
     assert(busBuffer.getNumFrames() >= numFrames);
 
+    // Copy sends (pre-voice-FX)
+    ::memcpy(busBuffer.getChannelData(0), sendBuffer.getChannelData(0), sizeof(float) * MIX_BUFFER_NUM_FRAMES);
+    ::memcpy(busBuffer.getChannelData(1), sendBuffer.getChannelData(1), sizeof(float) * MIX_BUFFER_NUM_FRAMES);
+
+    sendBuffer.clear();
+
     auto* voice{ voices.first() };
 
-    // @todo Check the FX-chain is empty
     if (voice == nullptr) {
-        if (fxTailCountdown == 0)
-            return;
+        // If there are no voices, just process the FX chain
+        fxChain.process(busBuffer.getChannelData(0), busBuffer.getChannelData(1), outL, outR, numFrames);
 
-        fxChain.process(outL, outR, outL, outR, numFrames);
-
-        if (fxTailCountdown > 0)
-            fxTailCountdown = numFrames > fxTailCountdown ? 0 : fxTailCountdown - numFrames;
-
-        // Negative tail means infinitely long effect
         return;
-
     }
-
-    busBuffer.clear();
 
     // Process all the active voices
     while (voice != nullptr) {

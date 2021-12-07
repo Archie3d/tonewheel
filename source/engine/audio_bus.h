@@ -47,6 +47,8 @@ public:
     AudioEffectChain& getFxChain() noexcept { return fxChain; }
     const AudioEffectChain& getFxChain() const noexcept { return fxChain; }
 
+    core::AudioBuffer<float>& getSendBuffer() noexcept { return sendBuffer; }
+
     void clearFxChain();
 
     void prepareToPlay();
@@ -73,6 +75,7 @@ private:
     core::List<Voice> voices;   ///< Active voices.
     core::AudioBuffer<float> voiceBuffer;
     core::AudioBuffer<float> busBuffer;
+    core::AudioBuffer<float> sendBuffer;
 };
 
 //==============================================================================

@@ -60,7 +60,7 @@ void Delay::process(const float* inL, const float* inR, float* outL, float* outR
 
         delayL.write(l * fb + inL[i]);
         delayR.write(r * fb + inR[i]);
-        outL[i] = l * wet * inL[i] * dry;
+        outL[i] = l * wet + inL[i] * dry;
         outR[i] = r * wet + inR[i] * dry;
     }
 }

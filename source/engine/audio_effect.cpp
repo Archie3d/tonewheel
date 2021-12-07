@@ -8,6 +8,7 @@
 
 #include "audio_effect.h"
 #include "fx/delay.h"
+#include "fx/send.h"
 #include <cassert>
 
 TW_NAMESPACE_BEGIN
@@ -29,7 +30,8 @@ void AudioEffect::setEngine(Engine* eng)
 AudioEffect::UniquePtr AudioEffect::createByTag(const std::string& tag)
 {
     static const AudioEffectFactory factory {
-        { fx::Delay::tag, []() { return std::make_unique<fx::Delay>(); } }
+        { fx::Delay::tag, []() { return std::make_unique<fx::Delay>(); } },
+        { fx::Send::tag,  []() { return std::make_unique<fx::Send>(); } }
     };
 
     // This will return nullptr if effect tag cannot be found in the factory
