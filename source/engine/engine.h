@@ -51,6 +51,8 @@ public:
         float tune      { 1.0f };   ///< Voice tune (aka playback speed).
 
         dsp::Envelope::Spec envelope{}; ///< Voice envelope.
+
+        AudioEffectChain::Ptr fxChain{};
     };
 
     /**

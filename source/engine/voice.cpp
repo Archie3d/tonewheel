@@ -186,6 +186,11 @@ void Voice::reset()
     fxTailCountdown = 0;
     params[GAIN].setValue(1.0f, true);
     params[PITCH].setValue(1.0f, true);
+
+    if (voiceTrigger.fxChain != nullptr) {
+        GlobalEngine::getInstance()->releaseObject(std::move(voiceTrigger.fxChain));
+        voiceTrigger.fxChain = nullptr;
+    }
 }
 
 //==============================================================================

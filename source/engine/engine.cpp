@@ -44,6 +44,11 @@ int Engine::triggerVoice(Trigger trigger)
     const int id{ voiceIdCounter++ };
     trigger.voiceId = id;
 
+    if (trigger.fxChain != nullptr) {
+        trigger.fxChain->setEngine(this);
+        trigger.fxChain->prepareToPlay();
+    }
+
     triggers.send(trigger);
 
     return id;
@@ -121,6 +126,7 @@ void Engine::processTriggers()
                     voiceTrigger.gain = trig.gain;
                     voiceTrigger.tune = trig.tune;
                     voiceTrigger.envelope = trig.envelope;
+                    voiceTrigger.fxChain = trig.fxChain;
                     stream->setOffset(trig.offset);
                     stream->setLoop(trig.loopBegin, trig.loopEnd + sample->getStopPosition(), trig.loopXfade);
 

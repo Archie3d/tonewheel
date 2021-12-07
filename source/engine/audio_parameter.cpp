@@ -141,7 +141,6 @@ const AudioParameter& AudioParameterPool::operator[](int index) const
     return dummyParameter;
 }
 
-
 AudioParameter& AudioParameterPool::getParameterByName(const std::string& name)
 {
     for (auto& param : parameters) {
