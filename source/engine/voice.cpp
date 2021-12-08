@@ -18,7 +18,7 @@ Voice::Voice()
     : params(NUM_PARAMS)
 {
     params[GAIN].setName("gain");
-    params[GAIN].setRange(0.0f, 1.0f);
+    params[GAIN].setRange(0.0f, 16.0f); // Allow +24dB gain
     params[GAIN].setValue(1.0f, true);
 
     params[PITCH].setName("pitch");

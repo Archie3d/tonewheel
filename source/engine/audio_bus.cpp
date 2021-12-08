@@ -22,7 +22,7 @@ AudioBus::AudioBus()
     , sendBuffer(MIX_BUFFER_NUM_CHANNELS, MIX_BUFFER_NUM_FRAMES)
 {
     params[GAIN].setName("gain");
-    params[GAIN].setRange(0.0f, 1.0f);
+    params[GAIN].setRange(0.0f, 16.0f); // Allow +24dB gain
     params[GAIN].setValue(1.0f, true);
 
     params[PAN].setName("pan");
