@@ -15,6 +15,8 @@ Engine::Engine(int numBuses)
     : GlobalEngine::Client()
     , audioBusPool(*this, numBuses)
     , sampleRate{ DEFAULT_SAMPLE_RATE_F }
+    , nonRealTime{ false }
+    , transportInfo{}
     , voiceIdCounter{ 0 }
 {
 }

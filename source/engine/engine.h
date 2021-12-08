@@ -64,6 +64,13 @@ public:
         float releaseTime { -1.0f };
     };
 
+    struct TransportInfo
+    {
+        double bpm{ 120.0 };
+        double time{ 0.0 };
+        double ppqPosition{ 0.0 };
+    };
+
     /**
      * A functor that can be called on the audio thread
      * but will be allocated and released on a non-audio thread.
@@ -107,6 +114,9 @@ public:
      */
     void prepareToPlay(float requestedSampleRate, int requestedFrameSize);
 
+    /**
+     * Prepare to play using previously set sample rate and frame size parameters.
+     */
     void prepareToPlay();
 
     /**
@@ -131,6 +141,12 @@ public:
      *       audio thread is not running or the queue is full.
      */
     void triggerActuator(const Actuator::Func& f);
+
+    void setNonRealtime(bool nonRT) noexcept { nonRealTime = nonRT; }
+    bool isNonRealtime() const noexcept { return nonRealTime; }
+
+    void setTransportInfo(const TransportInfo& info) { transportInfo = info; }
+    const TransportInfo& getTransportInfo() const noexcept { return transportInfo; }
 
     AudioBusPool& getAudioBusPool() noexcept { return audioBusPool; }
     const AudioBusPool& getAudioBusPool() const noexcept { return audioBusPool; }
@@ -178,6 +194,10 @@ private:
 
     float sampleRate;
     int frameSize;
+
+    std::atomic<bool> nonRealTime;
+
+    TransportInfo transportInfo;
 
     int voiceIdCounter;
     core::RingBuffer<Trigger, DEFAULT_TRIGGER_BUFFER_SIZE> triggers;
