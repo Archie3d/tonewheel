@@ -34,6 +34,8 @@ public:
 
     Delay();
 
+    const std::string& getTag() const override { return Delay::tag; }
+
     void prepareToPlay() override;
     void process(const float* inL, const float* inR, float* outL, float* outR, int numFrames) override;
     int getTailLength() const override;

@@ -33,6 +33,8 @@ public:
 
     Send();
 
+    const std::string& getTag() const override { return tag; }
+
     void prepareToPlay() override;
     void process(const float* inL, const float* inR, float* outL, float* outR, int numFrames) override;
     int getTailLength() const override { return 0; }

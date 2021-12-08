@@ -36,6 +36,8 @@ public:
 
     virtual ~AudioEffect();
 
+    virtual const std::string& getTag() const = 0;
+
     void setEngine(Engine* eng);
 
     virtual void prepareToPlay() = 0;

@@ -101,6 +101,8 @@ public:
 
     Voice* findVoiceWithTriggerId(int voiceId);
 
+    int getNumActiveVoices() const noexcept { return activeVoicesCount.load(); }
+
 private:
     std::vector<Voice> voices;
     core::List<Voice> idleVoices;
