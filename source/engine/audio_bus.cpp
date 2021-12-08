@@ -167,6 +167,12 @@ AudioBusPool::AudioBusPool(Engine& audioEngine, int size)
         bus.setEngine(&engine);
 }
 
+void AudioBusPool::killAllVoices()
+{
+    for (auto& bus : buses)
+        bus.killAllVoices();
+}
+
 void AudioBusPool::clearFxChain()
 {
     for (auto& bus : buses)

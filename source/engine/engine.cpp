@@ -25,6 +25,7 @@ Engine::~Engine() = default;
 
 void Engine::reset()
 {
+    audioBusPool.killAllVoices();
     audioBusPool.clearFxChain();
 }
 
