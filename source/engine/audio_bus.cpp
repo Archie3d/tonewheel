@@ -75,6 +75,19 @@ void AudioBus::killAllVoices()
     }
 }
 
+void AudioBus::forEachVoice(const std::function<void(Voice&)>& func)
+{
+    if (!func)
+        return;
+
+    auto* voice{ voices.first() };
+
+    while (voice != nullptr) {
+        func(*voice);
+        voice = voice->next();
+    }
+}
+
 void AudioBus::processAndMix(float* outL, float* outR, int numFrames)
 {
     assert(voiceBuffer.getNumFrames() >= numFrames);
@@ -171,6 +184,12 @@ void AudioBusPool::clearFxChain()
 {
     for (auto& bus : buses)
         bus.clearFxChain();
+}
+
+void AudioBusPool::forEachVoice(const std::function<void(Voice&)>& func)
+{
+    for (auto& bus : buses)
+        bus.forEachVoice(func);
 }
 
 void AudioBusPool::prepareToPlay()

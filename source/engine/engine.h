@@ -14,6 +14,7 @@
 #include "global_engine.h"
 #include "audio_bus.h"
 #include "sample.h"
+#include "midi.h"
 #include <map>
 #include <mutex>
 
@@ -198,6 +199,8 @@ private:
     std::atomic<bool> nonRealTime;
 
     TransportInfo transportInfo;
+
+    MidiKeyboardState midiKeyboardState;
 
     int voiceIdCounter;
     core::RingBuffer<Trigger, DEFAULT_TRIGGER_BUFFER_SIZE> triggers;

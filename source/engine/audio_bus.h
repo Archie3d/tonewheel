@@ -16,6 +16,7 @@
 #include "core/audio_buffer.h"
 #include "core/list.h"
 #include <vector>
+#include <functional>
 
 TW_NAMESPACE_BEGIN
 
@@ -55,6 +56,8 @@ public:
 
     void trigger(const Voice::Trigger& voiceTrigger);
     void killAllVoices();
+
+    void forEachVoice(const std::function<void(Voice&)>& func);
 
     void processAndMix(float* outL, float* outR, int numFrames);
 
@@ -98,6 +101,8 @@ public:
     void clearFxChain();
 
     void prepareToPlay();
+
+    void forEachVoice(const std::function<void(Voice&)>& func);
 
 private:
     Engine& engine;

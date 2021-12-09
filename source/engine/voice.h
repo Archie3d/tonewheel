@@ -64,6 +64,8 @@ public:
 
     const Trigger& getTrigger() const noexcept { return voiceTrigger; }
 
+    bool isForKey(int key) const noexcept { return voiceTrigger.key == key; }
+
 private:
 
     void reset();

@@ -17,6 +17,7 @@ Engine::Engine(int numBuses)
     , sampleRate{ DEFAULT_SAMPLE_RATE_F }
     , nonRealTime{ false }
     , transportInfo{}
+    , midiKeyboardState{}
     , voiceIdCounter{ 0 }
 {
 }
@@ -26,6 +27,7 @@ Engine::~Engine() = default;
 void Engine::reset()
 {
     audioBusPool.clearFxChain();
+    midiKeyboardState.reset();
 }
 
 void Engine::prepareToPlay(float requestedSampleRate, int requestedFrameSize)
