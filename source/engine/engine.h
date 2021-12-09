@@ -153,6 +153,9 @@ public:
     const AudioBusPool& getAudioBusPool() const noexcept { return audioBusPool; }
     float getSampleRate() const noexcept { return sampleRate; }
 
+    MidiKeyboardState& getMidiKeyboardState() noexcept { return midiKeyboardState; }
+    const MidiKeyboardState& getMidiKeyboardState() const noexcept { return midiKeyboardState; }
+
     /**
      * Process all pending events on the audio thread.
      *
