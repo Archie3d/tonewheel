@@ -98,6 +98,7 @@ public:
     AudioBus& operator[](int index) { return buses.at((size_t)index); }
     const AudioBus& operator[](int index) const { return buses.at((size_t)index); }
 
+    void killAllVoices();
     void clearFxChain();
 
     void prepareToPlay();
