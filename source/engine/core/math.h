@@ -9,11 +9,26 @@
 #pragma once
 
 #include "../globals.h"
+#include <cmath>
 
 TW_NAMESPACE_BEGIN
 
 namespace core {
 namespace math {
+
+template <typename T>
+struct Constants
+{
+    static constexpr T pi        = static_cast<T> (3.141592653589793238L);
+    static constexpr T twoPi     = static_cast<T> (2.0 * 3.141592653589793238L);
+    static constexpr T halfPi    = static_cast<T> (3.141592653589793238L / 2.0);
+    static constexpr T euler     = static_cast<T> (2.71828182845904523536L);
+    static constexpr T sqrt2     = static_cast<T> (1.4142135623730950488L);
+    static constexpr T halfSqrt2 = static_cast<T> (1.4142135623730950488L / 2.0);
+	static constexpr T rad2deg   = static_cast<T> (180.0 / 3.141592653589793238L);
+	static constexpr T deg2rad   = static_cast<T> (3.141592653589793238L / 180.0);
+};
+
 
 /// Clamp a value to the range.
 template <typename T>

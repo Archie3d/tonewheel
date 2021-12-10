@@ -38,6 +38,7 @@ public:
 
     Type getType() const noexcept;
     bool isValid() const noexcept;
+    double getTimestamp() const noexcept { return timestamp; }
 
     bool isNoteOn() const noexcept;
     bool isNoteOff() const noexcept;
