@@ -9,12 +9,56 @@
 #pragma once
 
 #include "globals.h"
-
 #include <array>
-#include <bitset>
-#include <functional>
 
 TW_NAMESPACE_BEGIN
+
+class MidiMessage
+{
+public:
+
+    enum class Type
+    {
+        Invalid,
+        NoteOff,
+        NoteOn,
+        PolyphonicAftertouch,
+        Controller,
+        ProgramChange,
+        ChannelAftertouch,
+        PitchBend,
+        System
+    };
+
+    MidiMessage();
+    MidiMessage(const uint8_t* rawData, size_t size, double time = 0.0);
+    MidiMessage(const uint32_t rawData, double time = 0.0);
+    MidiMessage(const MidiMessage& other);
+    MidiMessage& operator =(const MidiMessage& other);
+
+    Type getType() const noexcept;
+    bool isValid() const noexcept;
+
+    bool isNoteOn() const noexcept;
+    bool isNoteOff() const noexcept;
+    bool isController() const noexcept;
+    bool isPitchBend() const noexcept;
+    int getChannel() const noexcept;
+    int getNoteNumber() const noexcept;
+    int getVelocity() const noexcept;
+    float getVelocityAsFloat() const noexcept;
+    int getPressure() const noexcept;
+    int getControllerNumber() const noexcept;
+    int getControllerValue() const noexcept;
+    float getControllerValueAsFloat() const noexcept;
+    int getProgramNumber() const noexcept;
+    int getPitchBend() const noexcept;
+    float getPitchBendAsFloat() const noexcept;
+
+private:
+    uint32_t data{};
+    double timestamp{};
+};
 
 /**
  * This class is used to track the MIDI keys
