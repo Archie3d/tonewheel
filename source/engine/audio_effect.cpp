@@ -121,7 +121,7 @@ void AudioEffectChain::process(const float* inL, const float* inR,
 
     if (isEmpty()) {
         ::memcpy(outL, inL, sizeof(float) * numFrames);
-        ::memcpy(outR, inL, sizeof(float) * numFrames);
+        ::memcpy(outR, inR, sizeof(float) * numFrames);
     } else if (effects.size() == 1) {
         effects.front()->process(inL, inR, outL, outR, numFrames);
     } else {

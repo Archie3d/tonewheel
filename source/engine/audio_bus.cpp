@@ -120,7 +120,7 @@ void AudioBus::processAndMix(float* outL, float* outR, int numFrames)
     }
 
     float* bufL{ busBuffer.getChannelData(0) };
-    float* bufR{ busBuffer.getChannelData(0) };
+    float* bufR{ busBuffer.getChannelData(1) };
 
     // Apply bus effects
     fxChain.process(bufL, bufR, bufL, bufR, numFrames);
