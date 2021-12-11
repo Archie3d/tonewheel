@@ -101,13 +101,6 @@ void AudioBus::processAndMix(float* outL, float* outR, int numFrames)
 
     auto* voice{ voices.first() };
 
-    if (voice == nullptr) {
-        // If there are no voices, just process the FX chain
-        fxChain.process(busBuffer.getChannelData(0), busBuffer.getChannelData(1), outL, outR, numFrames);
-
-        return;
-    }
-
     // Process all the active voices
     while (voice != nullptr) {
         voice->process(voiceBuffer.getChannelData(0), voiceBuffer.getChannelData(1), numFrames);
