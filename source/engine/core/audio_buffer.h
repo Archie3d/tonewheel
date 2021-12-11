@@ -10,6 +10,7 @@
 
 #include "../globals.h"
 #include "aligned_memory.h"
+#include <memory>
 #include <cassert>
 
 TW_NAMESPACE_BEGIN

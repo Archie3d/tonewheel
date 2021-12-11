@@ -118,7 +118,7 @@ static AudioParameter dummyParameter{};
 AudioParameterPool::AudioParameterPool(int size)
     : parameters(size)
 {
-    assert(size > 0);
+    assert(size >= 0);
 }
 
 AudioParameter& AudioParameterPool::operator[](int index)

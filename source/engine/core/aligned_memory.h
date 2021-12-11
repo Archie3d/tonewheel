@@ -9,7 +9,7 @@
 #pragma once
 
 #include "../globals.h"
-
+#include <cstdint>
 #include <cstdlib>
 
 TW_NAMESPACE_BEGIN
