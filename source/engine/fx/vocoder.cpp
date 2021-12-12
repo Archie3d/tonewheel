@@ -24,14 +24,16 @@ const static float bandFreq[vocoder::NUM_BANDS] = {
     3439.0f, 4037.0f, 4740.0f, 5551.0f, 6509.0f, 7632.0f, 8949.0f, 10500.0f
 };
 
+constexpr float filterGainCompensation = 128.0f;
+
 void FilterBank::update(float sampleRate)
 {
     const float k{ core::math::Constants<float>::pi / sampleRate };
 
     for (size_t i = 0; i < specs.size(); ++i) {
-        float lf{ i == 0 ? 63.0f : 0.5f * (bandFreq[i - 1] + bandFreq[i]) };
-        float uf{ i == specs.size() - 1 ? 12000.0f : 0.5f * (bandFreq[i] + bandFreq[i + 1]) };
-        float q{ 0.25f * (uf - lf) / bandFreq[i] };
+        const float lf{ i == 0 ? 63.0f : powf(bandFreq[i - 1] * bandFreq[i], 0.5f) };
+        const float uf{ i == specs.size() - 1 ? 12000.0f : powf(bandFreq[i] * bandFreq[i + 1], 0.5f) };
+        const float q{ 0.5f * (uf - lf) / bandFreq[i] };
         specs[i].type = dsp::BiquadFilter::Type::BandPass;
         specs[i].sampleRate = sampleRate;
         specs[i].freq = bandFreq[i];
@@ -100,7 +102,7 @@ void VocoderAnalyzer::process(const float* inL, const float* inR, float* outL, f
             const float x{ filterBank.tick(band, tmp[i]) };
             const auto y{ dsp::Hilbert::tick(hilbertSpec, hilbertStates[band], x) };
 
-            env[i] = std::min(1.0f, std::abs(y) * 128.0f);
+            env[i] = std::min(1.0f, std::abs(y)) * vocoder::filterGainCompensation;
         }
     }
 }
