@@ -91,6 +91,9 @@ private:
 
     vocoder::FilterBank filterBankL;
     vocoder::FilterBank filterBankR;
+
+    std::array<float, MIX_BUFFER_NUM_FRAMES> tmpL;
+    std::array<float, MIX_BUFFER_NUM_FRAMES> tmpR;
 };
 
 

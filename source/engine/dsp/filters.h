@@ -33,14 +33,14 @@ struct BiquadFilter
 
     struct Spec
     {
-        Type type;
-        float sampleRate;
-        float freq;
-        float q;
-        float dbGain;
+        Type type { Type::LowPass };
+        float sampleRate { 44100.0f };
+        float freq { 1000.0f };
+        float q { 0.7071f};
+        float dbGain { 1.0f };
 
-        float a[3];
-        float b[4];
+        float a[3] { 0.0f };
+        float b[4] { 0.0f };
     };
 
     struct State
