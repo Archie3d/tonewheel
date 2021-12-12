@@ -29,13 +29,13 @@ void FilterBank::update(float sampleRate)
     const float k{ core::math::Constants<float>::pi / sampleRate };
 
     for (size_t i = 0; i < specs.size(); ++i) {
-        float lf{ i == 0 ? 60.0f : 0.5f * (bandFreq[i - 1] + bandFreq[i]) };
+        float lf{ i == 0 ? 63.0f : 0.5f * (bandFreq[i - 1] + bandFreq[i]) };
         float uf{ i == specs.size() - 1 ? 12000.0f : 0.5f * (bandFreq[i] + bandFreq[i + 1]) };
-        float q{ (uf - lf) / bandFreq[i] };
+        float q{ 0.25f * (uf - lf) / bandFreq[i] };
         specs[i].type = dsp::BiquadFilter::Type::BandPass;
         specs[i].sampleRate = sampleRate;
         specs[i].freq = bandFreq[i];
-        specs[i].q = 0.05f;
+        specs[i].q = q;
         dsp::BiquadFilter::update(specs[i]);
     }
 }
@@ -84,6 +84,11 @@ void VocoderAnalyzer::process(const float* inL, const float* inR, float* outL, f
 {
     assert(numFrames <= MIX_BUFFER_NUM_FRAMES);
 
+    if (inL != outL)
+        ::memcpy(outL, inL, sizeof(float) * numFrames);
+    if (inR != outR)
+        ::memcpy(outR, inR, sizeof(float) * numFrames);
+
     std::array<float, MIX_BUFFER_NUM_FRAMES> tmp;
     for (int i = 0; i < numFrames; ++i)
         tmp[i] = 0.5f * (inL[i] + inR[i]);
@@ -95,9 +100,7 @@ void VocoderAnalyzer::process(const float* inL, const float* inR, float* outL, f
             const float x{ filterBank.tick(band, tmp[i]) };
             const auto y{ dsp::Hilbert::tick(hilbertSpec, hilbertStates[band], x) };
 
-            env[i] = std::abs(y) * 100.0f;
-            //const float prev{ i == 0 ? env[MIX_BUFFER_NUM_FRAMES - 1] : env[i - 1] };
-            //env[i] = 0.95f * prev + 0.05f * std::abs(y);
+            env[i] = std::min(1.0f, std::abs(y) * 128.0f);
         }
     }
 }
