@@ -27,7 +27,7 @@ namespace dsp {
  */
 struct Hilbert
 {
-    using AllPass = AllPassFilterChain<4>;
+    using AllPass = FilterChain<SimpleAllPassFilter, 4>;
 
     struct Spec
     {

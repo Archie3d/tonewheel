@@ -9,6 +9,8 @@
 #pragma once
 
 #include "../globals.h"
+#include <cstring>
+#include <array>
 
 TW_NAMESPACE_BEGIN
 
@@ -149,7 +151,7 @@ struct DCBlockFilter
 /**
  * Simple all-pass filter using 1 sample delay.
  */
-struct AllPassFilter
+struct SimpleAllPassFilter
 {
     struct Spec
     {
@@ -171,33 +173,128 @@ struct AllPassFilter
 //==============================================================================
 
 /**
- * A cascade of all-pass filters.
+ * All-pass filter with a specified delay line length.
  */
-template<size_t N>
-struct AllPassFilterChain
+template <size_t Size>
+struct AllPassFilter
+{
+    using Buffer = std::array<float, Size>;
+
+    struct Spec
+    {
+        float feedback{ 0.0f };
+    };
+
+    struct State
+    {
+        Buffer buffer;
+        size_t index{ 0 };
+    };
+
+    static void update(Spec&) {};
+
+    static void reset(const Spec&, State& state)
+    {
+        state.index = 0;
+        ::memset(state.buffer.data(), 0, sizeof(float) *  state.buffer.size());
+    }
+
+    static float tick(const Spec& spec, State& state, float in)
+    {
+        const float bufOut{ state.buffer[state.index] };
+        const float out{ bufOut - in };
+        state.buffer[state.index] = in + (bufOut * spec.feedback);
+        state.index = (state.index + 1) % state.buffer.size();
+
+        return out;
+    }
+
+    static void process(const Spec& spec, State& state, const float* in, float* out, int numFrames)
+    {
+        for (int i = 0; i < numFrames; ++i)
+            out[i] = tick(spec, state, in[i]);
+    }
+};
+
+//==============================================================================
+
+/**
+ * Comb filter with specified delay line length.
+ */
+template<size_t Size>
+struct CombFilter
+{
+    using Buffer = std::array<float, Size>;
+
+    struct Spec
+    {
+        float feedback{ 0.0f };
+        float damp{ 0.0f };
+    };
+
+    struct State
+    {
+        Buffer buffer;
+        size_t index{ 0 };
+        float y{ 0.0f };
+    };
+
+    static void update(Spec&) {};
+
+    static void reset(Spec& spec, State& state)
+    {
+        state.index = 0;
+        state.y = 0.0f;
+        ::memset(state.buffer.data(), 0, sizeof(float) * state.buffer.size());
+    }
+
+    static float tick(const Spec& spec, State& state, float in)
+    {
+        const float out{ state.buffer[state.index] };
+        state.y = out + (state.y - out) * spec.damp;
+        state.buffer[state.index] = in + state.y * spec.feedback;
+        state.index = (state.index + 1) % state.buffer.size();
+
+        return out;
+    }
+
+    static void process(const Spec& spec, State& state, const float* in, float* out, int numFrames)
+    {
+        for (int i = 0; i < numFrames; ++i)
+            out[i] = tick(spec, state, in[i]);
+    }
+};
+
+//==============================================================================
+
+/**
+ * A cascade of identical filters.
+ */
+template<class Filter, size_t N>
+struct FilterChain
 {
     constexpr static size_t length = N;
 
     struct Spec
     {
-        AllPassFilter::Spec specs[N];
+        Filter::Spec specs[N];
     };
 
     struct State
     {
-        AllPassFilter::State states[N];
+        Filter::State states[N];
     };
 
     static void update(Spec& spec)
     {
         for (int i = 0; i < N; ++i)
-            AllPassFilter::update(spec.specs[i]);
+            Filter::update(spec.specs[i]);
     }
 
     static void reset(const Spec& spec, State& state)
     {
         for (int i = 0; i < N; ++i)
-            AllPassFilter::reset(spec.specs[i], state.states[i]);
+            Filter::reset(spec.specs[i], state.states[i]);
     }
 
     static float tick(const Spec& spec, State& state, float in)
@@ -205,7 +302,7 @@ struct AllPassFilterChain
         float x{ in };
 
         for (int i = 0; i < N; ++i)
-            x = AllPassFilter::tick(spec.specs[i], state.states[i], x);
+            x = Filter::tick(spec.specs[i], state.states[i], x);
 
         return x;
     }
@@ -215,10 +312,10 @@ struct AllPassFilterChain
         if constexpr (N == 0) {
             ::memcpy(out, in, sizeof(float) * numFrames);
         } else {
-            AllPassFilter::process(spec.specs[0], state.states[0], in, out, numFrames);
+            Filter::process(spec.specs[0], state.states[0], in, out, numFrames);
 
             for (int i = 1; i < N; ++i)
-                AllPassFilter::process(spec.specs[i], state.states[i], out, out, numFrames);
+                Filter::process(spec.specs[i], state.states[i], out, out, numFrames);
         }
     }
 };

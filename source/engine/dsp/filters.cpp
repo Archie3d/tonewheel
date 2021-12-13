@@ -391,16 +391,16 @@ void DCBlockFilter::process(const Spec& spec, State& state, const float* in, flo
 
 //==============================================================================
 
-void AllPassFilter::update(Spec&)
+void SimpleAllPassFilter::update(Spec&)
 {
 }
 
-void AllPassFilter::reset(const Spec&, State& state)
+void SimpleAllPassFilter::reset(const Spec&, State& state)
 {
     ::memset(&state, 0, sizeof(state));
 }
 
-float AllPassFilter::tick(const Spec& spec, State& state, float in)
+float SimpleAllPassFilter::tick(const Spec& spec, State& state, float in)
 {
     float out = (in + state.y[1]) * spec.alpha - state.x[1];
     state.y[1] = state.y[0];
@@ -411,7 +411,7 @@ float AllPassFilter::tick(const Spec& spec, State& state, float in)
     return out;
 }
 
-void AllPassFilter::process(const Spec& spec, State& state, const float* in, float* out, int numFrames)
+void SimpleAllPassFilter::process(const Spec& spec, State& state, const float* in, float* out, int numFrames)
 {
     for (int i = 0; i < numFrames; ++i) {
         const float x{ in[i] };
