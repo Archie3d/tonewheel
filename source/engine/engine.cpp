@@ -78,8 +78,10 @@ void Engine::triggerActuator(const Actuator::Func& f)
 
 void Engine::processAudioEvents()
 {
-    processReleases();
+    // The releases must be processed after the triggers,
+    // otherwise some notes may stuck.
     processTriggers();
+    processReleases();
     processActuators();
 }
 
@@ -153,7 +155,7 @@ void Engine::processReleases()
     Release rel;
 
     while (releases.receive(rel)) {
-        if (auto* voice{ voicePool.findVoiceWithTriggerId(rel.voiceId) }) {
+        if (auto* voice{ audioBusPool.findVoiceWithId(rel.voiceId) }) {
             if (rel.releaseTime < 0.0f)
                 voice->release();
             else

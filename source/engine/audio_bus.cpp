@@ -75,6 +75,20 @@ void AudioBus::killAllVoices()
     }
 }
 
+Voice* AudioBus::findVoiceWithId(int voiceId)
+{
+    auto* voice{ voices.first() };
+
+    while (voice != nullptr) {
+        if (voice->getTrigger().voiceId == voiceId)
+            return voice;
+
+        voice = voice->next();
+    }
+
+    return nullptr;
+}
+
 void AudioBus::forEachVoice(const std::function<void(Voice&)>& func)
 {
     if (!func)
@@ -183,6 +197,16 @@ void AudioBusPool::clearFxChain()
 {
     for (auto& bus : buses)
         bus.clearFxChain();
+}
+
+Voice* AudioBusPool::findVoiceWithId(int voiceId)
+{
+    for (auto& bus : buses) {
+        if (auto* voice{ bus.findVoiceWithId(voiceId) })
+            return voice;
+    }
+
+    return nullptr;
 }
 
 void AudioBusPool::forEachVoice(const std::function<void(Voice&)>& func)

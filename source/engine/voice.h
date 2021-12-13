@@ -101,8 +101,6 @@ public:
     Voice* getVoice();
     void returnToPool(Voice* voice);
 
-    Voice* findVoiceWithTriggerId(int voiceId);
-
     int getNumActiveVoices() const noexcept { return activeVoicesCount.load(); }
 
 private:

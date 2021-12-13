@@ -228,14 +228,4 @@ void VoicePool::returnToPool(Voice* voice)
     --activeVoicesCount;
 }
 
-Voice* VoicePool::findVoiceWithTriggerId(int voiceId)
-{
-    for (auto& voice : voices) {
-        if (voice.getTrigger().voiceId == voiceId)
-            return &voice;
-    }
-
-    return nullptr;
-}
-
 TW_NAMESPACE_END

@@ -57,6 +57,8 @@ public:
     void trigger(const Voice::Trigger& voiceTrigger);
     void killAllVoices();
 
+    Voice* findVoiceWithId(int voiceId);
+
     void forEachVoice(const std::function<void(Voice&)>& func);
 
     void processAndMix(float* outL, float* outR, int numFrames);
@@ -100,6 +102,8 @@ public:
 
     void killAllVoices();
     void clearFxChain();
+
+    Voice* findVoiceWithId(int voiceId);
 
     void prepareToPlay();
 
