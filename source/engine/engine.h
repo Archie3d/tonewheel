@@ -65,6 +65,9 @@ public:
         float releaseTime { -1.0f };
     };
 
+    /**
+     * Capture playback time info from the DAW.
+     */
     struct TransportInfo
     {
         double bpm{ 120.0 };
@@ -99,6 +102,7 @@ public:
      * Construct the engine with a given number of buses.
      */
     Engine(int numBuses = NUM_BUSES);
+
     virtual ~Engine();
 
     /**

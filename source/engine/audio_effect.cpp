@@ -10,6 +10,7 @@
 #include "fx/delay.h"
 #include "fx/send.h"
 #include "fx/vocoder.h"
+#include "fx/pitch_shift.h"
 #include <cassert>
 
 TW_NAMESPACE_BEGIN
@@ -34,7 +35,8 @@ AudioEffect::UniquePtr AudioEffect::createByTag(const std::string& tag)
         { fx::Delay::tag,              []() { return std::make_unique<fx::Delay>(); } },
         { fx::Send::tag,               []() { return std::make_unique<fx::Send>(); } },
         { fx::VocoderAnalyzer::tag,    []() { return std::make_unique<fx::VocoderAnalyzer>(); } },
-        { fx::VocoderSynthesizer::tag, []() { return std::make_unique<fx::VocoderSynthesizer>(); } }
+        { fx::VocoderSynthesizer::tag, []() { return std::make_unique<fx::VocoderSynthesizer>(); } },
+        { fx::PitchShift::tag,         []() { return std::make_unique<fx::PitchShift>(); } }
     };
 
     // This will return nullptr if effect tag cannot be found in the factory

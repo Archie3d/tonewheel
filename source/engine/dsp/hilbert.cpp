@@ -151,7 +151,6 @@ int	compute_coefs(double coef_arr [], double attenuation, double transition)
     return nbr_coefs;
 }
 
-
 void compute_coefs_spec_order_tbw(double coef_arr [], int nbr_coefs, double transition)
 {
     assert(nbr_coefs > 0);
@@ -233,7 +232,7 @@ std::complex<float> Hilbert::tick(const Hilbert::Spec& spec, Hilbert::State& sta
     float imag{};
     tick(spec, state, x, real, imag);
 
-    return std::complex (real, imag);
+    return std::complex(real, imag);
 }
 
 void Hilbert::process(const Spec& spec, State& state, const float* in, float* outR, float* outI, int numFrames)
