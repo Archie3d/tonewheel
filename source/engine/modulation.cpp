@@ -134,4 +134,9 @@ void GenericModulator::addDynamicVariables(const std::map<std::string, float>& v
     }
 }
 
+void GenericModulator::addVector(const std::string& name, std::vector<float>& v)
+{
+    expr.addVector(name, v);
+}
+
 TW_NAMESPACE_END

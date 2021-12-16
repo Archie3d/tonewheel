@@ -28,6 +28,8 @@ constexpr int MAX_PRELOAD_BUFFER_SIZE = 65536;
 constexpr int DEFAULT_STREAM_BUFFER_SIZE = 16384;
 constexpr int DEFAULT_XFADE_BUFFER_SIZE = 32;
 
+constexpr int NUM_CC_PARAMETERS = 128;
+
 constexpr int NUM_STREAM_WORKERS = 4;
 
 constexpr int NUM_BUSES = 16;

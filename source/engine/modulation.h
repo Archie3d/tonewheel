@@ -73,6 +73,7 @@ public:
 
     void addVariable(const std::string& name, size_t index);
     void addDynamicVariables(const std::map<std::string, float>& vars);
+    void addVector(const std::string& name, std::vector<float>& v);
 
 private:
 

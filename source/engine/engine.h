@@ -159,6 +159,10 @@ public:
     const AudioBusPool& getAudioBusPool() const noexcept { return audioBusPool; }
     float getSampleRate() const noexcept { return sampleRate; }
 
+    std::vector<float>& getCCParameters() noexcept { return ccParams; }
+    float getCC(int index) const;
+    void setCC(int index, float v);
+
     MidiKeyboardState& getMidiKeyboardState() noexcept { return midiKeyboardState; }
     const MidiKeyboardState& getMidiKeyboardState() const noexcept { return midiKeyboardState; }
 
@@ -208,6 +212,8 @@ private:
     std::atomic<bool> nonRealTime;
 
     TransportInfo transportInfo;
+
+    std::vector<float> ccParams;
 
     MidiKeyboardState midiKeyboardState;
 

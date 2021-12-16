@@ -17,6 +17,7 @@ Engine::Engine(int numBuses)
     , sampleRate{ DEFAULT_SAMPLE_RATE_F }
     , nonRealTime{ false }
     , transportInfo{}
+    , ccParams(NUM_CC_PARAMETERS, 0.0f)
     , midiKeyboardState{}
     , voiceIdCounter{ 0 }
 {
@@ -29,6 +30,8 @@ void Engine::reset()
     audioBusPool.killAllVoices();
     audioBusPool.clearFxChain();
     midiKeyboardState.reset();
+
+    ::memset(ccParams.data(), 0, sizeof(float) * ccParams.size());
 }
 
 void Engine::prepareToPlay(float requestedSampleRate, int requestedFrameSize)
@@ -74,6 +77,20 @@ void Engine::triggerActuator(const Actuator::Func& f)
 
     auto actuator{ std::make_shared<Actuator>(f) };
     actuators.send(std::move(actuator));
+}
+
+float Engine::getCC(int index) const
+{
+    if (index >= 0 && index < NUM_CC_PARAMETERS)
+        return ccParams[index];
+
+    return 0.0f;
+}
+
+void Engine::setCC(int index, float v)
+{
+    if (index >= 0 && index < NUM_CC_PARAMETERS)
+        ccParams[index] = v;
 }
 
 void Engine::processAudioEvents()
