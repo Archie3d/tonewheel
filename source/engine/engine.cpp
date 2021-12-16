@@ -109,13 +109,24 @@ Sample::Ptr Engine::getSampleById(int id)
     return it->second;
 }
 
+static void disposeTrigger(Engine::Trigger& trig)
+{
+    auto* g{ GlobalEngine::getInstance() };
+
+    if (trig.fxChain != nullptr)
+        g->releaseObject(std::move(trig.fxChain));
+
+    if (trig.modulator != nullptr)
+        g->releaseObject(std::move(trig.modulator));
+}
+
 void Engine::processTriggers()
 {
     auto* g{ GlobalEngine::getInstance() };
     auto& samplePool{ g->getSamplePool() };
     auto& streamPool{ g->getAudioStreamPool() };
 
-    Trigger trig;
+    Trigger trig{};
 
     while (triggers.receive(trig)) {
         if (trig.busNumber < 0 || trig.busNumber >= audioBusPool.getNumBuses())
@@ -128,22 +139,25 @@ void Engine::processTriggers()
                     stream->trigger(sample, &g->getStreamWorker());
 
                     Voice::Trigger voiceTrigger;
-                    voiceTrigger.voiceId = trig.voiceId;
-                    voiceTrigger.stream = stream;
-                    voiceTrigger.gain = trig.gain;
-                    voiceTrigger.tune = trig.tune;
-                    voiceTrigger.envelope = trig.envelope;
-                    voiceTrigger.fxChain = trig.fxChain;
+                    voiceTrigger.voiceId   = trig.voiceId;
+                    voiceTrigger.stream    = stream;
+                    voiceTrigger.gain      = trig.gain;
+                    voiceTrigger.tune      = trig.tune;
+                    voiceTrigger.envelope  = std::move(trig.envelope);
+                    voiceTrigger.fxChain   = std::move(trig.fxChain);
+                    voiceTrigger.modulator = std::move(trig.modulator);
                     stream->setOffset(trig.offset);
                     stream->setLoop(trig.loopBegin, trig.loopEnd + sample->getStopPosition(), trig.loopXfade);
 
                     audioBusPool[trig.busNumber].trigger(voiceTrigger);
                 } else {
                     // No more streams available
+                    disposeTrigger(trig);
                 }
             }
         } else {
             // Unable to find sample trig.sampleId
+            disposeTrigger(trig);
         }
     }
 }

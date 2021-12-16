@@ -54,6 +54,9 @@ public:
      */
     virtual int getTailLength() const { return 0; }
 
+    const std::string& getId() const noexcept { return effectId; }
+    void setId(const std::string& fxId) { effectId = fxId; }
+
     static UniquePtr createByTag(const std::string& type);
 
 protected:
@@ -61,6 +64,9 @@ protected:
     Engine* engine;
 
     AudioParameterPool params;
+
+private:
+    std::string effectId{};
 };
 
 //==============================================================================
@@ -103,6 +109,8 @@ public:
     int getNumEffects() const noexcept;
 
     AudioEffect* operator [](int index);
+
+    AudioEffect* getEffectByIndex(int index);
 
     /**
      * Returns the effects chain processing tail length in samples.

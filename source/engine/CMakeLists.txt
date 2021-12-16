@@ -22,6 +22,10 @@ if(APPLE)
         PUBLIC
             -mfma -msse -msse3 -msse4.1 -msse4.2 -mssse3 -mavx -mavx2
     )
+elseif(MSVC)
+    target_compile_options(${target}
+        PUBLIC "/bigobj"
+    )
 endif()
 
 if(CMAKE_BUILD_TYPE MATCHES "Debug")
@@ -33,6 +37,7 @@ target_include_directories(${target} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 
 target_link_libraries(${target}
     PUBLIC
+        exprtk
         libogg
         libvorbis
 )

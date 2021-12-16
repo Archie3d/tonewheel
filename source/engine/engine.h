@@ -54,6 +54,8 @@ public:
         dsp::Envelope::Spec envelope{}; ///< Voice envelope.
 
         AudioEffectChain::Ptr fxChain{};
+
+        GenericModulator::Ptr modulator{};
     };
 
     /**

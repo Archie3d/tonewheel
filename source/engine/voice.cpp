@@ -14,6 +14,19 @@
 
 TW_NAMESPACE_BEGIN
 
+Voice::Modulator::Modulator()
+    : GenericModulator(NUM_MODS)
+{
+    addVariable("key",      Voice::Modulator::KEY);
+    addVariable("rootKey",  Voice::Modulator::ROOT_KEY);
+    addVariable("gain",     Voice::Modulator::GAIN);
+    addVariable("pitch",    Voice::Modulator::PITCH);
+    addVariable("envelope", Voice::Modulator::ENVELOPE);
+    addVariable("time",     Voice::Modulator::TIME);
+}
+
+//==============================================================================
+
 Voice::Voice()
     : params(NUM_PARAMS)
 {
@@ -55,6 +68,9 @@ void Voice::resetAndReturnToPool()
 void Voice::process(float* outL, float* outR, int numFrames)
 {
     assert(voiceTrigger.stream != nullptr);
+
+    // Run modulation
+    modulateOnProcess();
 
     // Process the FX tail only
     if (envelope.getState() == dsp::Envelope::State::Off && fxTailCountdown > 0) {
@@ -157,6 +173,8 @@ void Voice::release()
 void Voice::releaseWithReleaseTime(float t)
 {
     envelope.release(t);
+
+    modulateOnRelease();
 }
 
 void Voice::trigger(Engine* eng, const Voice::Trigger& trig)
@@ -178,6 +196,11 @@ void Voice::trigger(Engine* eng, const Voice::Trigger& trig)
 
     voiceTrigger.envelope.sampleRate = engine->getSampleRate();
     envelope.trigger(voiceTrigger.envelope);
+
+    if (voiceTrigger.fxChain != nullptr)
+        voiceTrigger.fxChain->prepareToPlay();
+
+    modulateOnTrigger();
 }
 
 void Voice::reset()
@@ -191,6 +214,49 @@ void Voice::reset()
         GlobalEngine::getInstance()->releaseObject(std::move(voiceTrigger.fxChain));
         voiceTrigger.fxChain = nullptr;
     }
+
+    if (voiceTrigger.modulator != nullptr)
+    {
+        GlobalEngine::getInstance()->releaseObject(std::move(voiceTrigger.modulator));
+        voiceTrigger.modulator = nullptr;
+    }
+
+    params[GAIN].setValue(1.0f, true);
+    params[PITCH].setValue(1.0f, true);
+}
+
+void Voice::modulateOnTrigger()
+{
+    if (voiceTrigger.modulator == nullptr)
+        return;
+
+    auto& mod{ *voiceTrigger.modulator };
+
+    mod[Modulator::KEY] = (float)voiceTrigger.key;
+    mod[Modulator::ROOT_KEY] = (float)voiceTrigger.rootKey;
+}
+
+void Voice::modulateOnProcess()
+{
+    if (voiceTrigger.modulator == nullptr)
+        return;
+
+    auto& mod{ *voiceTrigger.modulator };
+
+    mod[Modulator::GAIN]     = params[GAIN].getCurrentValue();
+    mod[Modulator::PITCH]    = params[PITCH].getCurrentValue();
+    mod[Modulator::ENVELOPE] = envelope.getLevel();
+    mod[Modulator::TIME]     = samplePos / engine->getSampleRate();
+
+    mod.eval();
+
+    params[GAIN] = mod[Modulator::GAIN];
+    params[PITCH] = mod[Modulator::PITCH];
+}
+
+void Voice::modulateOnRelease()
+{
+
 }
 
 //==============================================================================

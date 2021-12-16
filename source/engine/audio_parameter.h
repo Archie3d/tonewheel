@@ -42,6 +42,8 @@ public:
 
     bool isSmoothing() const noexcept { return smoothing; }
 
+    float& getTargetRef() noexcept { return targetValue; }
+
 private:
 
     void updateThreshold();

@@ -6,5 +6,6 @@
 #
 # ******************************************************************************
 
+add_subdirectory(exprtk)
 add_subdirectory(libogg)
 add_subdirectory(libvorbis)

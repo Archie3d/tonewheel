@@ -12,6 +12,7 @@
 #include "audio_parameter.h"
 #include "audio_stream.h"
 #include "audio_effect.h"
+#include "modulation.h"
 #include "core/list.h"
 #include "dsp/envelope.h"
 #include <atomic>
@@ -27,6 +28,25 @@ class Voice : public core::ListItem<Voice>
 {
 public:
 
+    class Modulator : public GenericModulator
+    {
+    public:
+
+        enum Mods
+        {
+            KEY,
+            ROOT_KEY,
+            GAIN,
+            PITCH,
+            ENVELOPE,
+            TIME,
+
+            NUM_MODS
+        };
+
+        Modulator();
+    };
+
     struct Trigger
     {
         int voiceId         { -1 };
@@ -39,6 +59,8 @@ public:
         dsp::Envelope::Spec envelope{};
 
         AudioEffectChain::Ptr fxChain{};
+
+        Modulator::Ptr modulator{};
     };
 
     enum Params
@@ -69,6 +91,10 @@ public:
 private:
 
     void reset();
+
+    void modulateOnTrigger();
+    void modulateOnProcess();
+    void modulateOnRelease();
 
     Engine* engine;
     Trigger voiceTrigger;

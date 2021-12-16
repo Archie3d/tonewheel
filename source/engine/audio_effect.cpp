@@ -102,6 +102,11 @@ int AudioEffectChain::getNumEffects() const noexcept
 
 AudioEffect* AudioEffectChain::operator [](int index)
 {
+    return getEffectByIndex(index);
+}
+
+AudioEffect* AudioEffectChain::getEffectByIndex(int index)
+{
     if (index >= 0 && index < (int)effects.size())
         return effects.at((size_t)index).get();
 
