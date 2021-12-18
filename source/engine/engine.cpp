@@ -14,6 +14,7 @@ TW_NAMESPACE_BEGIN
 Engine::Engine(int numBuses)
     : GlobalEngine::Client()
     , audioBusPool(*this, numBuses)
+    , sampleIdCounter{ 0 }
     , sampleRate{ DEFAULT_SAMPLE_RATE_F }
     , nonRealTime{ false }
     , transportInfo{}
@@ -102,17 +103,22 @@ void Engine::processAudioEvents()
     processActuators();
 }
 
-void Engine::addSample(int id, const std::string& filePath, int startPos, int stopPos)
+int Engine::addSample(const std::string& filePath, int startPos, int stopPos)
 {
     auto& samplePool{ GlobalEngine::getInstance()->getSamplePool() };
     auto sample{ samplePool.addSample(filePath, startPos, stopPos) };
 
+    int id{};
+
     if (sample != nullptr) {
         std::lock_guard<decltype(mutex)> lock(mutex);
+        id = ++sampleIdCounter;
         idToSampleMap[id] = sample;
     } else {
         // @todo Report unable to load sample from filePath
     }
+
+    return id;
 }
 
 Sample::Ptr Engine::getSampleById(int id)

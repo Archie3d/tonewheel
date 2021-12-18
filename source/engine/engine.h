@@ -178,13 +178,13 @@ public:
      * Add a sample to the engine.
      *
      * This method will add a sample to the global pool if it's not already
-     * there and the register the sample with the current engine using the
-     * ID number provided.
+     * there and the register the sample with the current engine using a
+     * unique ID number local to this engine.
      *
      * @note This method is thread-safe however it will lock while the
      *       sample is being added.
      */
-    void addSample(int id, const std::string& filePath, int startPos = 0, int stopPos = 0);
+    int addSample(const std::string& filePath, int startPos = 0, int stopPos = 0);
 
     /**
      * Returns a sample by its ID.
@@ -205,6 +205,7 @@ private:
 
     /// Mapping IDs to samples
     std::map<int, Sample::Ptr> idToSampleMap;
+    int sampleIdCounter;
 
     float sampleRate;
     int frameSize;
