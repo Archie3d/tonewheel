@@ -140,10 +140,10 @@ int AudioStream::fillBuffers(float* left, float* right, int nFrames)
 
 bool AudioStream::readOne(float& left, float& right)
 {
-    const auto prebufferedFramesAvailable{ sample->getNumPreloadedFrames() - samplePos };
+    const auto preloadedFramesAvailable{ sample->getNumPreloadedFrames() - samplePos };
 
     // Read from pre-buffer
-    if (prebufferedFramesAvailable > 0)
+    if (preloadedFramesAvailable > 0)
     {
         const auto& prebuffer{ sample->getPreloadedSamples() };
         left = prebuffer.getChannelData(0)[samplePos];
