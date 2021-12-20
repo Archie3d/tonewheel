@@ -74,14 +74,14 @@ struct Reverb
 
     static void update(Spec& spec)
     {
-        spec.comb1.feedback = spec.roomsize;
-        spec.comb2.feedback = spec.roomsize;
-        spec.comb3.feedback = spec.roomsize;
-        spec.comb4.feedback = spec.roomsize;
-        spec.comb5.feedback = spec.roomsize;
-        spec.comb6.feedback = spec.roomsize;
-        spec.comb7.feedback = spec.roomsize;
-        spec.comb8.feedback = spec.roomsize;
+        spec.comb1.feedback = spec.roomSize;
+        spec.comb2.feedback = spec.roomSize;
+        spec.comb3.feedback = spec.roomSize;
+        spec.comb4.feedback = spec.roomSize;
+        spec.comb5.feedback = spec.roomSize;
+        spec.comb6.feedback = spec.roomSize;
+        spec.comb7.feedback = spec.roomSize;
+        spec.comb8.feedback = spec.roomSize;
 
         spec.comb1.damp = spec.damp;
         spec.comb2.damp = spec.damp;
@@ -128,12 +128,12 @@ struct Reverb
 
         y *= 0.125f; // normalize due to x8 combs added together 1/8
 
-        y = AllPassFilter<allPassTuning1>::tick(spec.allPass1, state.allPass1, in);
-        y = AllPassFilter<allPassTuning2>::tick(spec.allPass2, state.allPass2, in);
-        y = AllPassFilter<allPassTuning3>::tick(spec.allPass3, state.allPass3, in);
-        y = AllPassFilter<allPassTuning4>::tick(spec.allPass4, state.allPass4, in);
+        y = AllPassFilter<allPassTuning1>::tick(spec.allPass1, state.allPass1, y);
+        y = AllPassFilter<allPassTuning2>::tick(spec.allPass2, state.allPass2, y);
+        y = AllPassFilter<allPassTuning3>::tick(spec.allPass3, state.allPass3, y);
+        y = AllPassFilter<allPassTuning4>::tick(spec.allPass4, state.allPass4, y);
 
-        out[i] = y;
+        return y;
     }
 
     static void process(const Spec& spec, State& state, const float* in, float* out, int numFrames)

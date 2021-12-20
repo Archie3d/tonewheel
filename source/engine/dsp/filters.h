@@ -241,7 +241,7 @@ struct CombFilter
 
     static void update(Spec&) {};
 
-    static void reset(Spec& spec, State& state)
+    static void reset(const Spec& spec, State& state)
     {
         state.index = 0;
         state.y = 0.0f;

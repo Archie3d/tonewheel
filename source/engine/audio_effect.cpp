@@ -11,6 +11,7 @@
 #include "fx/send.h"
 #include "fx/vocoder.h"
 #include "fx/pitch_shift.h"
+#include "fx/reverb.h"
 #include <cassert>
 
 TW_NAMESPACE_BEGIN
@@ -36,7 +37,8 @@ AudioEffect::UniquePtr AudioEffect::createByTag(const std::string& tag)
         { fx::Send::tag,               []() { return std::make_unique<fx::Send>(); } },
         { fx::VocoderAnalyzer::tag,    []() { return std::make_unique<fx::VocoderAnalyzer>(); } },
         { fx::VocoderSynthesizer::tag, []() { return std::make_unique<fx::VocoderSynthesizer>(); } },
-        { fx::PitchShift::tag,         []() { return std::make_unique<fx::PitchShift>(); } }
+        { fx::PitchShift::tag,         []() { return std::make_unique<fx::PitchShift>(); } },
+        { fx::Reverb::tag,             []() { return std::make_unique<fx::Reverb>(); } }
     };
 
     // This will return nullptr if effect tag cannot be found in the factory
