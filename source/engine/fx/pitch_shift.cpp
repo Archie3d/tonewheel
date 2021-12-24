@@ -56,6 +56,20 @@ void PitchShift::prepareToPlay()
     delayL.resize(numSamples);
     delayR.resize(numSamples);
 
+    hilbertSpec.sampleRate = sampleRate;
+    dsp::Hilbert::update(hilbertSpec);
+    dsp::Hilbert::reset(hilbertSpec, hilbertStateLA);
+    dsp::Hilbert::reset(hilbertSpec, hilbertStateRA);
+    dsp::Hilbert::reset(hilbertSpec, hilbertStateLB);
+    dsp::Hilbert::reset(hilbertSpec, hilbertStateRB);
+
+    phaseA = 0.0f;
+    phaseB = 0.0f;
+    sinA = 0.0f;
+    cosA = 1.0f;
+    sinB = 0.0f;
+    cosB = 1.0f;
+
     dA = 0.0f;
     dB = 0.5f * numSamples;
     w = core::math::Constants<float>::pi / (float)numSamples;
@@ -84,21 +98,40 @@ void PitchShift::process(const float* inL, const float* inR, float *outL, float*
         const float wa{ std::sin(w * dA) };
         const float wb{ std::sin(w * dB) };
 
-        outL[i] = 0.5f * (wa * delayL.read(dA) + wb * delayL.read(dB));
-        outR[i] = 0.5f * (wa * delayR.read(dA) + wb * delayR.read(dB));
+        auto hla = dsp::Hilbert::tick(hilbertSpec, hilbertStateLA, delayL.read(dA));
+        auto hra = dsp::Hilbert::tick(hilbertSpec, hilbertStateRA, delayR.read(dA));
+        auto hlb = dsp::Hilbert::tick(hilbertSpec, hilbertStateLB, delayL.read(dB));
+        auto hrb = dsp::Hilbert::tick(hilbertSpec, hilbertStateRB, delayR.read(dB));
+
+        float la = hla.real() * cosA - hla.imag() * sinA;
+        float ra = hra.real() * cosA - hra.imag() * sinA;
+        float lb = hlb.real() * cosB - hlb.imag() * sinB;
+        float rb = hrb.real() * cosB - hrb.imag() * sinB;
+
+        outL[i] = 0.5f * (wa * la + wb * lb);
+        outR[i] = 0.5f * (wa * ra + wb * rb);
+
+        //outL[i] = 0.5f * (wa * delayL.read(dA) + wb * delayL.read(dB));
+        //outR[i] = 0.5f * (wa * delayR.read(dA) + wb * delayR.read(dB));
 
         dA += p;
         dB += p;
 
-        if (dA < 0.0f)
+        if (dA < 0.0f) {
             dA += delayLength;
-        else if (dA >= delayLength)
+            updatePhaseA();
+        } else if (dA >= delayLength) {
             dA -= delayLength;
+            updatePhaseA();
+        }
 
-        if (dB < 0.0f)
+        if (dB < 0.0f) {
             dB += delayLength;
-        else if (dB >= delayLength)
+            updatePhaseB();
+        } else if (dB >= delayLength) {
             dB -= delayLength;
+            updatePhaseB();
+        }
     }
 }
 
@@ -110,6 +143,22 @@ void PitchShift::updateLowPassFilter()
         lowPassSpec.freq = p > 1.0f ? (0.5f * lowPassSpec.sampleRate / p) : design::lowPassOpenFreq;
         dsp::BiquadFilter::update(lowPassSpec);
     }
+}
+
+void PitchShift::updatePhaseA()
+{
+    phaseA = fmod(phaseA + 0.3169f, 1.0f);
+    const float a{ core::math::Constants<float>::twoPi * phaseA };
+    cosA = cos(a);
+    sinA = sin(a);
+}
+
+void PitchShift::updatePhaseB()
+{
+    phaseB = fmod(phaseA + 0.1931f, 1.0f);
+    const float a{ core::math::Constants<float>::twoPi * phaseB };
+    cosB = cos(a);
+    sinB = sin(a);
 }
 
 } // namespace fx

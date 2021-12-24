@@ -12,6 +12,7 @@
 #include "audio_effect.h"
 #include "dsp/delay_line.h"
 #include "dsp/filters.h"
+#include "dsp/hilbert.h"
 
 TW_NAMESPACE_BEGIN
 
@@ -44,6 +45,9 @@ private:
 
     void updateLowPassFilter();
 
+    void updatePhaseA();
+    void updatePhaseB();
+
     dsp::BiquadFilter::Spec lowPassSpec;
     dsp::BiquadFilter::State lowPassStateL;
     dsp::BiquadFilter::State lowPassStateR;
@@ -54,6 +58,17 @@ private:
     dsp::DCBlockFilter::Spec dcBlockSpec;
     dsp::DCBlockFilter::State dcBlockStateL;
     dsp::DCBlockFilter::State dcBlockStateR;
+
+    dsp::Hilbert::Spec hilbertSpec;
+    dsp::Hilbert::State hilbertStateLA;
+    dsp::Hilbert::State hilbertStateRA;
+    dsp::Hilbert::State hilbertStateLB;
+    dsp::Hilbert::State hilbertStateRB;
+
+    float phaseA;
+    float phaseB;
+    float sinA, cosA;
+    float sinB, cosB;
 
     float dA;
     float dB;
