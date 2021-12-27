@@ -108,11 +108,8 @@ void PitchShift::process(const float* inL, const float* inR, float *outL, float*
         float lb = hlb.real() * cosB - hlb.imag() * sinB;
         float rb = hrb.real() * cosB - hrb.imag() * sinB;
 
-        outL[i] = 0.5f * (wa * la + wb * lb);
-        outR[i] = 0.5f * (wa * ra + wb * rb);
-
-        //outL[i] = 0.5f * (wa * delayL.read(dA) + wb * delayL.read(dB));
-        //outR[i] = 0.5f * (wa * delayR.read(dA) + wb * delayR.read(dB));
+        outL[i] = wa * la + wb * lb;
+        outR[i] = wa * ra + wb * rb;
 
         dA += p;
         dB += p;
@@ -147,7 +144,7 @@ void PitchShift::updateLowPassFilter()
 
 void PitchShift::updatePhaseA()
 {
-    phaseA = fmod(phaseA + 0.3169f, 1.0f);
+    phaseA = fmod(phaseB + 0.3169f, 1.0f);
     const float a{ core::math::Constants<float>::twoPi * phaseA };
     cosA = cos(a);
     sinA = sin(a);

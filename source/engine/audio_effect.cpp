@@ -11,6 +11,8 @@
 #include "fx/send.h"
 #include "fx/vocoder.h"
 #include "fx/pitch_shift.h"
+#include "fx/frequency_shift.h"
+#include "fx/phase_shift.h"
 #include "fx/reverb.h"
 #include <cassert>
 
@@ -38,6 +40,8 @@ AudioEffect::UniquePtr AudioEffect::createByTag(const std::string& tag)
         { fx::VocoderAnalyzer::tag,    []() { return std::make_unique<fx::VocoderAnalyzer>(); } },
         { fx::VocoderSynthesizer::tag, []() { return std::make_unique<fx::VocoderSynthesizer>(); } },
         { fx::PitchShift::tag,         []() { return std::make_unique<fx::PitchShift>(); } },
+        { fx::FrequencyShift::tag,     []() { return std::make_unique<fx::FrequencyShift>(); } },
+        { fx::PhaseShift::tag,         []() { return std::make_unique<fx::PhaseShift>(); } },
         { fx::Reverb::tag,             []() { return std::make_unique<fx::Reverb>(); } }
     };
 
