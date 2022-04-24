@@ -9,6 +9,7 @@
 #include "audio_file.h"
 #include "core/string_utils.h"
 #include "vorbis/vorbisfile.h"
+#include "opusfile.h"
 #include <fstream>
 #include <vector>
 #include <cstdint>
@@ -432,6 +433,96 @@ struct OggVorbis : public AudioFile::Decoder
     }
 };
 
+//==============================================================================
+
+struct Opus : public AudioFile::Decoder
+{
+    OggOpusFile* opusFile = nullptr;
+
+    Opus()
+    {
+    }
+
+    ~Opus()
+    {
+        close();
+    }
+
+    core::Error open(const std::string& path) override
+    {
+        close();
+
+        int err{};
+        opusFile = op_open_file(path.c_str(), &err);
+
+        if (opusFile == nullptr)
+            return core::Error("Failed to open opus file");
+
+        return {};
+    }
+
+    void close() override
+    {
+        if (opusFile != nullptr)
+        {
+            op_free(opusFile);
+            opusFile = nullptr;
+        }
+    }
+
+    bool isOpen() const override
+    {
+        return opusFile != nullptr;
+    }
+
+    core::Error seek(size_t frame) override
+    {
+        assert(opusFile != nullptr);
+
+        if (frame > 0) {
+            constexpr size_t offset = 2048;
+            size_t frameOffset = 0;
+
+            if (frame > offset)
+                frameOffset = frame - offset;
+
+            size_t scratchFrames = frame - frameOffset;
+            const auto res = op_pcm_seek(opusFile, frameOffset);
+
+            if (res != 0)
+                return core::Error("Opus seek failed");
+
+            const auto scratchRead = read((int)scratchFrames, nullptr, nullptr);
+            if (scratchRead != scratchFrames)
+                return core::Error("Opus read failed");
+
+            return {};
+        }
+
+        if (op_pcm_seek(opusFile, frame) != 0)
+            return core::Error("Opus seek failed");
+
+        return {};
+    }
+
+    int read(int nFrames, float* left, float* right) override
+    {
+        // @todo
+        return 0;
+    }
+
+    float getSampleRate() const override
+    {
+        // @todo
+        return 48000.0f;
+    }
+
+    int getNumChannels() const override
+    {
+        // @todo
+        return 2;
+    }
+};
 
 } // namespace decoder
 

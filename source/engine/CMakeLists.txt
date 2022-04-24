@@ -40,4 +40,6 @@ target_link_libraries(${target}
         exprtk
         libogg
         libvorbis
+        libopus
+        opusfile
 )

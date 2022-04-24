@@ -9,3 +9,5 @@
 add_subdirectory(exprtk)
 add_subdirectory(libogg)
 add_subdirectory(libvorbis)
+add_subdirectory(libopus)
+add_subdirectory(opusfile)
