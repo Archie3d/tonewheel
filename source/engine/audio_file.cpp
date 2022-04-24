@@ -542,6 +542,8 @@ AudioFile::AudioFile(const std::string& filePath, Format fileFormat)
             decoder = std::make_unique<decoder::OggVorbis>();
             break;
         case Format::Opus:
+            decoder = std::make_unique<decoder::Opus>();
+            break;
         default:
             break;
     }
