@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include <cstddef>
+
 #define TW_NAMESPACE_BEGIN namespace tonewheel {
 #define TW_NAMESPACE_END }
 #define TW_USING_NAMESPACE using namespace tonewheel;

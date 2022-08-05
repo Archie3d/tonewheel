@@ -9,7 +9,9 @@
 #include "audio_file.h"
 #include "core/string_utils.h"
 #include "vorbis/vorbisfile.h"
-#include "opusfile.h"
+#if TONEWHEEL_WITH_OPUS
+#   include "opusfile.h"
+#endif
 #include <fstream>
 #include <vector>
 #include <cstdint>
@@ -435,6 +437,8 @@ struct OggVorbis : public AudioFile::Decoder
 
 //==============================================================================
 
+#if TONEWHEEL_WITH_OPUS
+
 struct Opus : public AudioFile::Decoder
 {
     OggOpusFile* opusFile = nullptr;
@@ -470,7 +474,7 @@ struct Opus : public AudioFile::Decoder
         }
     }
 
-    bool isOpen() const override
+    bool isOpen() override
     {
         return opusFile != nullptr;
     }
@@ -524,6 +528,8 @@ struct Opus : public AudioFile::Decoder
     }
 };
 
+#endif // TONEWHEEL_WITH_OPUS
+
 } // namespace decoder
 
 //==============================================================================
@@ -541,9 +547,11 @@ AudioFile::AudioFile(const std::string& filePath, Format fileFormat)
         case Format::OggVorbis:
             decoder = std::make_unique<decoder::OggVorbis>();
             break;
+#if TONEWHEEL_WITH_OPUS
         case Format::Opus:
             decoder = std::make_unique<decoder::Opus>();
             break;
+#endif
         default:
             break;
     }
@@ -613,8 +621,10 @@ AudioFile::Format AudioFile::guessFormatFromFileName(const std::string& path)
     if (core::str::endsWith(lowerCasePath, ".ogg"))
         return Format::OggVorbis;
 
+#if TONEWHEEL_WITH_OPUS
     if (core::str::endsWith(lowerCasePath, ".opus"))
         return Format::Opus;
+#endif
 
     return Format::Unknown;
 }

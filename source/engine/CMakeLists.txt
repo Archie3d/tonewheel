@@ -18,10 +18,12 @@ add_library(${target} STATIC ${src})
 set_property(TARGET ${target} PROPERTY CXX_STANDARD 20)
 
 if(APPLE)
-    target_compile_definitions(${target}
-        PUBLIC
-            -mfma -msse -msse3 -msse4.1 -msse4.2 -mssse3 -mavx -mavx2
-    )
+    if (${CMAKE_HOST_SYSTEM_PROCESSOR} MATCHES "x86_64")
+        target_compile_definitions(${target}
+            PUBLIC
+                -mfma -msse -msse3 -msse4.1 -msse4.2 -mssse3 -mavx -mavx2
+        )
+    endif()
 elseif(MSVC)
     target_compile_options(${target}
         PUBLIC "/bigobj"
@@ -40,6 +42,8 @@ target_link_libraries(${target}
         exprtk
         libogg
         libvorbis
-        libopus
-        opusfile
 )
+
+if (TONEWHEEL_WITH_OPUS)
+    target_link_libraries(${target} PUBLIC libopus opusfile)
+endif()

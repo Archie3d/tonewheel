@@ -277,12 +277,12 @@ struct FilterChain
 
     struct Spec
     {
-        Filter::Spec specs[N];
+        typename Filter::Spec specs[N];
     };
 
     struct State
     {
-        Filter::State states[N];
+        typename Filter::State states[N];
     };
 
     static void update(Spec& spec)

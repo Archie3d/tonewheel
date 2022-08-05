@@ -34,7 +34,9 @@ public:
         Unknown,
         WavPCM,
         OggVorbis,
+#if TONEWHEEL_WITH_OPUS
         Opus
+#endif
     };
 
     /**

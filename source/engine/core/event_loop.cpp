@@ -10,6 +10,7 @@
 #include "list.h"
 #include <atomic>
 #include <mutex>
+#include <vector>
 #include <condition_variable>
 #include <cassert>
 

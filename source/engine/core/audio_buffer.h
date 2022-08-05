@@ -12,6 +12,7 @@
 #include "aligned_memory.h"
 #include <memory>
 #include <cassert>
+#include <algorithm>
 
 TW_NAMESPACE_BEGIN
 

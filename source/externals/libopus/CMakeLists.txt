@@ -6,7 +6,7 @@
 #
 # ******************************************************************************
 
-set(TARGET liboups)
+set(TARGET libopus)
 
 # Check CMAKE_OSX_ARCHITECTURES is "x86_64" or "arm64"
 
