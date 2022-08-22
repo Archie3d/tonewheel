@@ -148,7 +148,7 @@ struct List
     }
 
 private:
-    using ItemBase = struct ListItem<Item>;
+    using ItemBase = ListItem<Item>;
     static_assert(std::derived_from<Item, ItemBase>, "List item must inherit from ListItem<>");
 
     Item* _head{ nullptr };
