@@ -14,6 +14,7 @@
 #include "fx/frequency_shift.h"
 #include "fx/phase_shift.h"
 #include "fx/reverb.h"
+#include "fx/delay_phase_shift.h"
 #include <cassert>
 
 TW_NAMESPACE_BEGIN
@@ -42,7 +43,8 @@ AudioEffect::UniquePtr AudioEffect::createByTag(const std::string& tag)
         { fx::PitchShift::tag,         []() { return std::make_unique<fx::PitchShift>(); } },
         { fx::FrequencyShift::tag,     []() { return std::make_unique<fx::FrequencyShift>(); } },
         { fx::PhaseShift::tag,         []() { return std::make_unique<fx::PhaseShift>(); } },
-        { fx::Reverb::tag,             []() { return std::make_unique<fx::Reverb>(); } }
+        { fx::Reverb::tag,             []() { return std::make_unique<fx::Reverb>(); } },
+        { fx::DelayPhaseShift::tag,    []() { return std::make_unique<fx::DelayPhaseShift>(); } }
     };
 
     // This will return nullptr if effect tag cannot be found in the factory
