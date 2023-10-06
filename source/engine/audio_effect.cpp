@@ -7,6 +7,7 @@
 // *****************************************************************************
 
 #include "audio_effect.h"
+#include "fx/filters.h"
 #include "fx/delay.h"
 #include "fx/send.h"
 #include "fx/vocoder.h"
@@ -35,6 +36,13 @@ void AudioEffect::setEngine(Engine* eng)
 AudioEffect::UniquePtr AudioEffect::createByTag(const std::string& tag)
 {
     static const AudioEffectFactory factory {
+        { fx::LowPassFilter::tag,      []() { return std::make_unique<fx::LowPassFilter>(); } },
+        { fx::HighPassFilter::tag,     []() { return std::make_unique<fx::HighPassFilter>(); } },
+        { fx::LowShelfFilter::tag,     []() { return std::make_unique<fx::LowShelfFilter>(); } },
+        { fx::HighShelfFilter::tag,    []() { return std::make_unique<fx::HighShelfFilter>(); } },
+        { fx::BandPassFilter::tag,     []() { return std::make_unique<fx::BandPassFilter>(); } },
+        { fx::NotchFilter::tag,        []() { return std::make_unique<fx::NotchFilter>(); } },
+        { fx::AllPassFilter::tag,      []() { return std::make_unique<fx::AllPassFilter>(); } },
         { fx::Delay::tag,              []() { return std::make_unique<fx::Delay>(); } },
         { fx::Send::tag,               []() { return std::make_unique<fx::Send>(); } },
         { fx::VocoderAnalyzer::tag,    []() { return std::make_unique<fx::VocoderAnalyzer>(); } },
