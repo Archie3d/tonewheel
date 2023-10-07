@@ -37,7 +37,7 @@ void FrequencyShift::prepareToPlay()
 void FrequencyShift::process(const float* inL, const float* inR, float *outL, float* outR, int numFrames)
 {
     const float k{ core::math::Constants<float>::twoPi / engine->getSampleRate() };
-    float f{ params[FREQUENCY].getCurrentValue() };
+    float f{ params[FREQUENCY].getNextValue() };
     float df{ f * k };
 
     while (params[FREQUENCY].isSmoothing() && numFrames > 0) {

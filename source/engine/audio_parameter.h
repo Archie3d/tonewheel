@@ -44,10 +44,12 @@ public:
 
     float& getTargetRef() noexcept { return targetValue; }
 
+    void updateSmoothing();
+
 private:
 
     void updateThreshold();
-    void updateSmoothing();
+
 
     std::string name;   ///< Parameter name.
 
@@ -72,6 +74,7 @@ public:
     AudioParameter& operator[](int index);
     const AudioParameter& operator[](int index) const;
     AudioParameter& getParameterByName(const std::string& name);
+    void updateSmoothing();
 
     int getNumParameters() const noexcept { return (int)parameters.size(); }
 private:

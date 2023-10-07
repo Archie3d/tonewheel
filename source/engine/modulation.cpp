@@ -19,6 +19,7 @@ struct ModulationExpression::Impl
 
     SymbolTable symbolTable;
     Expression expression;
+    std::string errorMessage{};
 
     Impl()
         : symbolTable{}
@@ -47,7 +48,17 @@ struct ModulationExpression::Impl
     {
         static Parser parser;
 
-        return parser.compile(code, expression);
+        bool result{ parser.compile(code, expression) };
+
+        errorMessage.clear();
+
+        if (!result && parser.error_count() > 0) {
+            // Fetch the very last error
+            exprtk::parser_error::type err{ parser.get_error(parser.error_count() - 1) };
+            errorMessage = exprtk::parser_error::to_str(err.mode) + " | " + err.diagnostic;
+        }
+
+        return result;
     }
 
     float eval()
@@ -85,6 +96,11 @@ bool ModulationExpression::compile(const std::string& code)
     return d->compile(code);
 }
 
+std::string ModulationExpression::getErrorMessage() const
+{
+    return d->errorMessage;
+}
+
 float ModulationExpression::eval()
 {
     return d->eval();
@@ -109,6 +125,11 @@ bool GenericModulator::compile(const std::string& code)
     return expr.compile(code);
 }
 
+std::string GenericModulator::getErrorMessage() const
+{
+    return expr.getErrorMessage();
+}
+
 void GenericModulator::eval()
 {
     expr.eval();
@@ -121,7 +142,7 @@ void GenericModulator::addVariable(const std::string& name, size_t index)
 
 void GenericModulator::addDynamicVariable(const std::string& name, float& value)
 {
-    expr.addVariable(name, value);
+    expr.addVariable(name, value, false);
 }
 
 void GenericModulator::addDynamicVariables(const std::map<std::string, float>& vars)

@@ -151,4 +151,10 @@ AudioParameter& AudioParameterPool::getParameterByName(const std::string& name)
     return dummyParameter;
 }
 
+void AudioParameterPool::updateSmoothing()
+{
+    for (auto& param : parameters)
+        param.updateSmoothing();
+}
+
 TW_NAMESPACE_END

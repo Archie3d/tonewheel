@@ -57,6 +57,8 @@ public:
     const std::string& getId() const noexcept { return effectId; }
     void setId(const std::string& fxId) { effectId = fxId; }
 
+    void updateParametersSmoothing();
+
     static UniquePtr createByTag(const std::string& type);
 
 protected:

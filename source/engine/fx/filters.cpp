@@ -51,8 +51,8 @@ void BiquadFilter::prepareToPlay()
 
 void BiquadFilter::process(const float* inL, const float* inR, float* outL, float* outR, int numFrames)
 {
-    float f = params[FREQUENCY].getCurrentValue();
-    float q = params[Q_FACTOR].getCurrentValue();
+    float f = params[FREQUENCY].getNextValue();
+    float q = params[Q_FACTOR].getNextValue();
 
     while ((params[FREQUENCY].isSmoothing() ||
             params[Q_FACTOR].isSmoothing()) && numFrames > 0) {

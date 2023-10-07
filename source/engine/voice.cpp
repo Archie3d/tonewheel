@@ -197,6 +197,9 @@ void Voice::trigger(Engine* eng, const Voice::Trigger& trig)
     voiceTrigger.envelope.sampleRate = engine->getSampleRate();
     envelope.trigger(voiceTrigger.envelope);
 
+    if (voiceTrigger.fxChain != nullptr)
+        voiceTrigger.fxChain->prepareToPlay();
+
     modulateOnTrigger();
 }
 

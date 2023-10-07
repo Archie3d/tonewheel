@@ -38,6 +38,8 @@ public:
     void addConstant(const std::string& name, float v);
     bool compile(const std::string& code);
 
+    std::string getErrorMessage() const;
+
     float eval();
 
 private:
@@ -67,6 +69,7 @@ public:
 
     void addConstant(const std::string& name, float v);
     bool compile(const std::string& code);
+    std::string getErrorMessage() const;
     void eval();
 
     float& operator[](size_t i) { return variables[i]; }

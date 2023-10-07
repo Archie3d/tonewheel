@@ -33,6 +33,11 @@ void AudioEffect::setEngine(Engine* eng)
     engine = eng;
 }
 
+void AudioEffect::updateParametersSmoothing()
+{
+    params.updateSmoothing();
+}
+
 AudioEffect::UniquePtr AudioEffect::createByTag(const std::string& tag)
 {
     static const AudioEffectFactory factory {
@@ -147,6 +152,7 @@ void AudioEffectChain::process(const float* inL, const float* inR,
         ::memcpy(outL, inL, sizeof(float) * numFrames);
         ::memcpy(outR, inR, sizeof(float) * numFrames);
     } else if (effects.size() == 1) {
+        effects.front()->updateParametersSmoothing();
         effects.front()->process(inL, inR, outL, outR, numFrames);
     } else {
         const float* inBufL{ inL };
@@ -165,10 +171,12 @@ void AudioEffectChain::process(const float* inL, const float* inR,
         }
 
         auto it{ effects.begin() };
+        (*it)->updateParametersSmoothing();
         (*it)->process(inBufL, inBufR, outBufL, outBufR, numFrames);
         ++it;
 
         while (it != effects.end()) {
+            (*it)->updateParametersSmoothing();
             (*it)->process(outBufL, outBufR, outNextBufL, outNextBufR, numFrames);
 
             std::swap(outBufL, outNextBufL);
