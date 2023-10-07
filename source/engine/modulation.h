@@ -72,6 +72,7 @@ public:
     float& operator[](size_t i) { return variables[i]; }
 
     void addVariable(const std::string& name, size_t index);
+    void addDynamicVariable(const std::string& name, float& value);
     void addDynamicVariables(const std::map<std::string, float>& vars);
     void addVector(const std::string& name, std::vector<float>& v);
 

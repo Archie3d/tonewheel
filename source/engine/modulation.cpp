@@ -119,6 +119,11 @@ void GenericModulator::addVariable(const std::string& name, size_t index)
     expr.addVariable(name, variables[index]);
 }
 
+void GenericModulator::addDynamicVariable(const std::string& name, float& value)
+{
+    expr.addVariable(name, value);
+}
+
 void GenericModulator::addDynamicVariables(const std::map<std::string, float>& vars)
 {
     // The vector must be preallocated otherwise the references
