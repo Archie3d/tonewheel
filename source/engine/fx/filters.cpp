@@ -79,13 +79,13 @@ int BiquadFilter::getTailLength() const
     return 0;
 }
 
-const std::string LowPassFilter::tag("low_pass_filter");
-const std::string HighPassFilter::tag("high_pass_filter");
-const std::string LowShelfFilter::tag("low_shelf_filter");
-const std::string HighShelfFilter::tag("high_shelf_filter");
-const std::string BandPassFilter::tag("band_pass_filter");
-const std::string NotchFilter::tag("notch_filter");
-const std::string AllPassFilter::tag("all_pass_filter");
+template<> const std::string LowPassFilter::tag("low_pass_filter");
+template<> const std::string HighPassFilter::tag("high_pass_filter");
+template<> const std::string LowShelfFilter::tag("low_shelf_filter");
+template<> const std::string HighShelfFilter::tag("high_shelf_filter");
+template<> const std::string BandPassFilter::tag("band_pass_filter");
+template<> const std::string NotchFilter::tag("notch_filter");
+template<> const std::string AllPassFilter::tag("all_pass_filter");
 
 } // namespace fx
 
