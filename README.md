@@ -1,18 +1,18 @@
 # Tonewheel
 
-Audio engine for making sample-based virtual instruments.
+Embeddable audio engine intended for sample-based instruments, synthesizers, game engines, etc.
 
 ## Engine architecture
 
 ```
 
-bus[0]-----------------------------[ FX chain ]-------->
+bus[0]-----------------------[ FX chain ]-------->
 
-bus[1]-----------------------------[ FX chain ]-------->
-             ^                                              Outputs
-...          |
+bus[1]-----------------------[ FX chain ]-------->
+             ^
+...          |                                 Outputs
              |
-bus[N]-------|---------------------[ FX chain ]-------->
+bus[N]-------|---------------[ FX chain ]-------->
              |
              |
              |
